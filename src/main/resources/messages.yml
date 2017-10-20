@@ -53,7 +53,7 @@ command.usage.warnings: 'Usage: /warnings [player] | <hideinfo>'
 command.usage.delwarp: 'Usage: /delwarp <name>'
 command.usage.setwarp: 'Usage: /setwarp <name> [local] [hidden]'
 command.usage.warp: 'Usage: /warp [player] <name>'
-command.usage.warps: 'Usage: /warps [global]'
+command.usage.warps: 'Usage: /warps [all]'
 
 home.delete.success.default: 'Successfully deleted your default home'
 home.notset.default: 'Your default home has not been set'

@@ -36,7 +36,7 @@ public class WarpsCommand extends Command {
                                     .getLocalPositions().remove(p.getUniqueId()).getServer();
                             main.getWarpHandler().sendWarpList(sender,
                                     (main.getCommandHandler().hasFlag(args, "true", 0) ||
-                                            main.getCommandHandler().hasFlag(args, "global", 0))
+                                            main.getCommandHandler().hasFlag(args, "all", 0))
                                             ? null : server,
                                     includeHidden);
                         }

@@ -41,7 +41,7 @@ public class WarpHandler {
     }
 
 
-        public void setWarp(String name, Location loc, boolean local, boolean hidden) {
+    public void setWarp(String name, Location loc, boolean local, boolean hidden) {
         String sql;
         Warp old = getWarp(name, true);
         if (old != null) {
@@ -95,7 +95,10 @@ public class WarpHandler {
             warps = "[";
             for (Warp w : this.warps) {
                 if (!w.isHidden() || includeHidden) {
-                    if(server != null && !w.getLocation().getServer().getName().equals(server.getName())) {
+                    if(w.isLocal() && (
+                            (server != null && !w.getLocation().getServer().getName().equals(server.getName())) ||
+                            !main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.warps.all")
+                    )) {
                         continue;
                     }
                     String entry;
@@ -133,7 +136,7 @@ public class WarpHandler {
                 warps = warps.substring(0, warps.length() - 15);
             warps += "]";
 
-            if (warps.equals("[\"\",]"))
+            if (warps.equals("[]"))
                 warps = main.getMessageHandler().getMessage("warp.list.nofound");
 
             main.getMessageHandler().sendMessage(p, warps);

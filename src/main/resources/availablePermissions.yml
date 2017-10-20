@@ -74,6 +74,7 @@ proxysuite.commands.setwarp.hidden
 proxysuite.commands.warp
 proxysuite.commands.warp.others
 proxysuite.commands.warps
+proxysuite.commands.warps.all
 proxysuite.commands.fly
 proxysuite.commands.gamemode
 proxysuite.commands.gamemode.others
