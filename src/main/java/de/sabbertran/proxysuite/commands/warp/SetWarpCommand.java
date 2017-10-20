@@ -19,30 +19,24 @@ public class SetWarpCommand extends Command {
     public void execute(final CommandSender sender, final String[] args) {
         main.getCommandHandler().executeCommand(sender, "setwarp", new Runnable() {
             public void run() {
+                final boolean hidden = main.getCommandHandler().hasFlag(args, "hidden", 1) &&
+                        main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.setwarp.hidden");
+                final boolean local = main.getCommandHandler().hasFlag(args, "local", 1) &&
+                        main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.setwarp.local");
+
+
                 if (sender instanceof ProxiedPlayer) {
-                    if (args.length == 1) {
+                    if (args.length > 0) {
                         if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.setwarp")) {
                             final ProxiedPlayer p = (ProxiedPlayer) sender;
                             final String name = args[0];
                             main.getPositionHandler().requestPosition(p);
                             main.getPositionHandler().addPositionRunnable(p, new Runnable() {
                                 public void run() {
-                                    main.getWarpHandler().setWarp(name, main.getPositionHandler().getLocalPositions().remove(p.getUniqueId()), false);
-                                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("warp.created.success").replace("%warp%", name));
-                                }
-                            });
-                        } else {
-                            main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                        }
-                    } else if (args.length == 2 && args[1].equalsIgnoreCase("hidden")) {
-                        if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.setwarp.hidden")) {
-                            final ProxiedPlayer p = (ProxiedPlayer) sender;
-                            final String name = args[0];
-                            main.getPositionHandler().requestPosition(p);
-                            main.getPositionHandler().addPositionRunnable(p, new Runnable() {
-                                public void run() {
-                                    main.getWarpHandler().setWarp(name, main.getPositionHandler().getLocalPositions().remove(p.getUniqueId()), true);
-                                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("warp.created.hidden.success").replace("%warp%", name));
+                                    main.getWarpHandler().setWarp(name, main.getPositionHandler().getLocalPositions().remove(p.getUniqueId()), local, hidden);
+                                    main.getMessageHandler()
+                                            .sendMessage(sender, main.getMessageHandler()
+                                                    .getMessage(getIdentifier(local, hidden)).replace("%warp%", name));
                                 }
                             });
                         } else {
@@ -56,5 +50,19 @@ public class SetWarpCommand extends Command {
                 }
             }
         });
+    }
+
+    private String getIdentifier(boolean local, boolean hidden) {
+        String identifier;
+        if(local && hidden) {
+            identifier = "created.local-hidden.success";
+        } else if(local) {
+            identifier = "created.local.success";
+        } else if(hidden) {
+            identifier = "created.hidden.success";
+        } else {
+            identifier = "created.success";
+        }
+        return "warp." + identifier;
     }
 }

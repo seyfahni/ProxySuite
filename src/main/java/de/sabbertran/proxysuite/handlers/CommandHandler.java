@@ -124,6 +124,16 @@ public class CommandHandler {
         }
     }
 
+    public boolean hasFlag(String[] args, String flag, int after) {
+        for(int i = after; i < args.length; i++) {
+            if(args[i].equalsIgnoreCase(flag)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void executeCommand(final CommandSender sender, final String command, final Runnable runnable) {
         main.getProxy().getScheduler().runAsync(main, new Runnable() {
             public void run() {

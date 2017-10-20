@@ -69,6 +69,7 @@ proxysuite.commands.warnings.hideinfo
 proxysuite.commands.warnings.others
 proxysuite.commands.delwarp
 proxysuite.commands.setwarp
+proxysuite.commands.setwarp.local
 proxysuite.commands.setwarp.hidden
 proxysuite.commands.warp
 proxysuite.commands.warp.others
