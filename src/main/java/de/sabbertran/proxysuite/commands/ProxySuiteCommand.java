@@ -42,20 +42,20 @@ public class ProxySuiteCommand extends Command {
                         } else {
                             main.getPermissionHandler().sendMissingPermissionInfo(sender);
                         }
-                    } else if (args.length == 2) {
-                        if (args[0].equalsIgnoreCase("reloadperms")) {
-                            ProxiedPlayer p = main.getPlayerHandler().getPlayer(args[1], sender, true);
-                            if (p != null) {
-                                if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.reloadperms")) {
-                                    main.getPermissionHandler().resetPermissions(p);
-                                    main.getPermissionHandler().updatePermissions(p);
-                                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("permissions.reload.success.player").replace("%player%", p.getName()));
-                                } else {
-                                    main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                }
+                    }
+                } else if (args.length == 2) {
+                    if (args[0].equalsIgnoreCase("reloadperms")) {
+                        ProxiedPlayer p = main.getPlayerHandler().getPlayer(args[1], sender, true);
+                        if (p != null) {
+                            if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.reloadperms")) {
+                                main.getPermissionHandler().resetPermissions(p);
+                                main.getPermissionHandler().updatePermissions(p);
+                                main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("permissions.reload.success.player").replace("%player%", p.getName()));
                             } else {
-                                main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.player.notseen").replace("%player%", args[1]));
+                                main.getPermissionHandler().sendMissingPermissionInfo(sender);
                             }
+                        } else {
+                            main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.player.notseen").replace("%player%", args[1]));
                         }
                     } else {
                         main.getCommandHandler().sendUsage(sender, self);

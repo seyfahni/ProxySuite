@@ -23,18 +23,16 @@ public class Events implements Listener {
 
     public Events(ProxySuite main) {
         this.main = main;
-        justJoined = new ArrayList<ProxiedPlayer>();
+        justJoined = new ArrayList<>();
     }
 
     @EventHandler
     public void onServerSwitch(ServerSwitchEvent ev) {
         final ProxiedPlayer p = ev.getPlayer();
 
-        main.getProxy().getScheduler().schedule(main, new Runnable() {
-            public void run() {
-                main.getPermissionHandler().resetPermissions(p);
-                main.getPermissionHandler().updatePermissions(p);
-            }
+        main.getProxy().getScheduler().schedule(main, () -> {
+            main.getPermissionHandler().resetPermissions(p);
+            main.getPermissionHandler().updatePermissions(p);
         }, main.getConfig().getInt("ProxySuite.Server.SwitchCheckDelayMS") / 2, TimeUnit.MILLISECONDS);
 
         if (!justJoined.remove(p)) {
@@ -42,29 +40,27 @@ public class Events implements Listener {
                 if (main.getPlayerHandler().getVanishedPlayers().contains(p))
                     main.getPlayerHandler().sendVanishToServer(p);
 
-            main.getProxy().getScheduler().schedule(main, new Runnable() {
-                public void run() {
-                    if (main.getConfig().getBoolean("ProxySuite.ModulesEnabled.Fly")) {
-                        if (main.getPermissionHandler().hasPermission(p, "proxysuite.player.keepflyonserverchange")) {
-                            if (main.getPlayerHandler().getFlying().contains(p))
-                                main.getPlayerHandler().sendFlyToServer(p);
-                        } else {
-                            if (main.getPlayerHandler().getFlying().contains(p)) {
-                                main.getPlayerHandler().sendUnflyToServer(p);
-                                main.getPlayerHandler().getFlying().remove(p);
-                                main.getPlayerHandler().writeFlyToDatabase(p, false);
-                                main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage("fly.disabled"));
-                            }
+            main.getProxy().getScheduler().schedule(main, () -> {
+                if (main.getConfig().getBoolean("ProxySuite.ModulesEnabled.Fly")) {
+                    if (main.getPermissionHandler().hasPermission(p, "proxysuite.player.keepflyonserverchange")) {
+                        if (main.getPlayerHandler().getFlying().contains(p))
+                            main.getPlayerHandler().sendFlyToServer(p);
+                    } else {
+                        if (main.getPlayerHandler().getFlying().contains(p)) {
+                            main.getPlayerHandler().sendUnflyToServer(p);
+                            main.getPlayerHandler().getFlying().remove(p);
+                            main.getPlayerHandler().writeFlyToDatabase(p, false);
+                            main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage("fly.disabled"));
                         }
                     }
-                    if (main.getConfig().getBoolean("ProxySuite.ModulesEnabled.Gamemode")) {
-                        if (main.getPermissionHandler().hasPermission(p, "proxysuite.player.keepgamemodeonserverchange")) {
-                            if (main.getPlayerHandler().getGamemode().containsKey(p))
-                                main.getPlayerHandler().sendGamemodeToServer(p, main.getPlayerHandler().getGamemode().get(p));
-                        } else {
-                            if (!main.getPlayerHandler().getGamemode().get(p).equals("SURVIVAL"))
-                                main.getPlayerHandler().setGamemode(p, "SURVIVAL");
-                        }
+                }
+                if (main.getConfig().getBoolean("ProxySuite.ModulesEnabled.Gamemode")) {
+                    if (main.getPermissionHandler().hasPermission(p, "proxysuite.player.keepgamemodeonserverchange")) {
+                        if (main.getPlayerHandler().getGamemode().containsKey(p))
+                            main.getPlayerHandler().sendGamemodeToServer(p, main.getPlayerHandler().getGamemode().get(p));
+                    } else {
+                        if (!main.getPlayerHandler().getGamemode().get(p).equals("SURVIVAL"))
+                            main.getPlayerHandler().setGamemode(p, "SURVIVAL");
                     }
                 }
             }, main.getConfig().getInt("ProxySuite.Server.SwitchCheckDelayMS"), TimeUnit.MILLISECONDS);
@@ -73,7 +69,7 @@ public class Events implements Listener {
             if (firstSpawn != null)
                 if (main.getConfig().getBoolean("ProxySuite.ModulesEnabled.Teleport"))
                     if (main.getPlayerHandler().getPendingFirstSpawnTeleports().remove(p.getUniqueId())) {
-                        main.getTeleportHandler().teleportToLocation(p, firstSpawn, true, true);
+                        main.getTeleportHandler().teleportToLocation(p, firstSpawn, true, true, true);
                     }
         }
     }
@@ -171,33 +167,29 @@ public class Events implements Listener {
                     });
                 }
 
-                main.getProxy().getScheduler().schedule(main, new Runnable() {
-                    public void run() {
-                        main.getMessageHandler().broadcast(main.getMessageHandler().getMessage("join.broadcast").replace("%player%",
-                                ev.getPlayer().getName()).replace("%player%", p.getName()).replace("%prefix%", main.getPlayerHandler
-                                ().getPrefix(p)).replace("%suffix%", main.getPlayerHandler().getSuffix(p)));
+                main.getProxy().getScheduler().schedule(main, () -> {
+                    main.getMessageHandler().broadcast(main.getMessageHandler().getMessage("join.broadcast").replace("%player%",
+                            ev.getPlayer().getName()).replace("%player%", p.getName()).replace("%prefix%", main.getPlayerHandler
+                            ().getPrefix(p)).replace("%suffix%", main.getPlayerHandler().getSuffix(p)));
 
-                        if (main.getPermissionHandler().hasPermission(p, "proxysuite.messages.motd"))
-                            for (String s : main.getConfig().getStringList("ProxySuite.Messages.MOTD"))
-                                main.getMessageHandler().sendMessage(p, s);
-                    }
+                    if (main.getPermissionHandler().hasPermission(p, "proxysuite.messages.motd"))
+                        for (String s : main.getConfig().getStringList("ProxySuite.Messages.MOTD"))
+                            main.getMessageHandler().sendMessage(p, s);
                 }, main.getConfig().getInt("ProxySuite.Messages.JoinMessageDelayMS"), TimeUnit.MILLISECONDS);
 
                 if (main.getConfig().getBoolean("ProxySuite.ModulesEnabled.Vanish")) {
-                    main.getProxy().getScheduler().runAsync(main, new Runnable() {
-                        public void run() {
-                            try {
-                                ResultSet rs = main.getSQLConnection().createStatement().executeQuery("SELECT vanished FROM "
-                                        + main.getTablePrefix() + "players WHERE uuid = '" + p.getUniqueId() + "'");
-                                if (rs.next() && rs.getBoolean("vanished")) {
-                                    main.getPlayerHandler().getVanishedPlayers().add(p);
-                                    main.getPlayerHandler().sendVanishToServer(p);
-                                    if (main.isBungeeTabListPlusInstalled())
-                                        BungeeTabListPlus.hidePlayer(p);
-                                }
-                            } catch (SQLException e) {
-                                e.printStackTrace();
+                    main.getProxy().getScheduler().runAsync(main, () -> {
+                        try {
+                            ResultSet rs = main.getSQLConnection().createStatement().executeQuery("SELECT vanished FROM "
+                                    + main.getTablePrefix() + "players WHERE uuid = '" + p.getUniqueId() + "'");
+                            if (rs.next() && rs.getBoolean("vanished")) {
+                                main.getPlayerHandler().getVanishedPlayers().add(p);
+                                main.getPlayerHandler().sendVanishToServer(p);
+                                if (main.isBungeeTabListPlusInstalled())
+                                    BungeeTabListPlus.hidePlayer(p);
                             }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
                     });
                 }

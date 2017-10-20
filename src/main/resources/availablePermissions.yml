@@ -3,6 +3,8 @@ proxysuite.warps.showhidden
 proxysuite.warps.showcoordinates
 proxysuite.notes.showadditionalinfo
 proxysuite.warnings.showadditionalinfo
+proxysuite.teleport.ignorewarmup
+proxysuite.teleport.warmup.#
 proxysuite.teleport.ignorecooldown
 proxysuite.teleport.cooldown.#
 proxysuite.teleport.savelocation

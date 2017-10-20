@@ -124,23 +124,21 @@ public class WarningHandler {
     }
 
     public void teleportToWarn(final ProxiedPlayer p, final int id) {
-        main.getProxy().getScheduler().runAsync(main, new Runnable() {
-            public void run() {
-                try {
-                    ResultSet rs = main.getSQLConnection().createStatement().executeQuery("SELECT server, world, x, " +
-                            "y, z, pitch, yaw FROM " + main.getTablePrefix() + "warnings WHERE id = '" + id + "'");
-                    if (rs.next()) {
-                        Location loc = new Location(main.getProxy().getServerInfo(rs.getString("server")), rs.getString
-                                ("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("pitch"),
-                                rs.getFloat("yaw"));
-                        main.getTeleportHandler().teleportToLocation(p, loc, true, false);
-                    } else {
-                        main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage
-                                ("warning.notexists").replace("%id%", "" + id));
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            try {
+                ResultSet rs = main.getSQLConnection().createStatement().executeQuery("SELECT server, world, x, " +
+                        "y, z, pitch, yaw FROM " + main.getTablePrefix() + "warnings WHERE id = '" + id + "'");
+                if (rs.next()) {
+                    Location loc = new Location(main.getProxy().getServerInfo(rs.getString("server")), rs.getString
+                            ("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("pitch"),
+                            rs.getFloat("yaw"));
+                    main.getTeleportHandler().teleportToLocation(p, loc, true, false, true);
+                } else {
+                    main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage
+                            ("warning.notexists").replace("%id%", "" + id));
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }

@@ -26,7 +26,7 @@ public class BackCommand extends Command {
                             boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                             if (remainingCooldown == 0 || ignoreCooldown) {
                                 main.getTeleportHandler().teleportToLocation(p, main.getTeleportHandler().getLastPositions().get
-                                        (p), ignoreCooldown, false);
+                                        (p), ignoreCooldown, false, false);
                             } else {
                                 main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +
                                         ".cooldown").replace("%cooldown%", "" + remainingCooldown));

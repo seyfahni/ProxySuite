@@ -26,7 +26,7 @@ public class TPHereCommand extends Command {
                             ProxiedPlayer teleport = main.getPlayerHandler().getPlayer(args[0], sender, true);
                             if (teleport != null) {
                                 boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
-                                main.getTeleportHandler().teleportToPlayer(teleport, p, ignoreCooldown);
+                                main.getTeleportHandler().teleportToPlayer(teleport, p, ignoreCooldown, true);
                             } else {
                                 main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
                                         ("command.player.notonline").replace("%player%", args[0]));

@@ -172,6 +172,11 @@ public class PMessageListener implements Listener {
                         WorldInfo worldInfo = new WorldInfo(in.readUTF(), Long.parseLong(in.readUTF()));
                         main.getPlayerHandler().getWorldInfos().put(p, worldInfo);
                     }
+                } else if(subchannel.equalsIgnoreCase("SendConfigMessage")) {
+                    ProxiedPlayer p = main.getProxy().getPlayer(in.readUTF());
+                    if (p != null) {
+                        main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage(in.readUTF()));
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
