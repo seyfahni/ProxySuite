@@ -140,7 +140,7 @@ public class CommandHandler {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    p.getServer().sendData("ProxySuite", b.toByteArray());
+                    p.getServer().sendData("proxysuite:channel", b.toByteArray());
 
                     int count = 0;
                     while (getCheckedCommand(p, command) == null && count < 100) {

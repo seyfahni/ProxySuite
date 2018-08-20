@@ -112,7 +112,7 @@ public class ProxySuite extends Plugin {
         readDatabase();
 
         getProxy().getPluginManager().registerListener(this, new Events(this));
-        getProxy().registerChannel("ProxySuite");
+        getProxy().registerChannel("proxysuite:channel");
         getProxy().getPluginManager().registerListener(this, new PMessageListener(this));
 
         for (ServerInfo s : getProxy().getServers().values())

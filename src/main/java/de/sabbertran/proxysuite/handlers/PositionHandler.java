@@ -33,7 +33,7 @@ public class PositionHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        p.getServer().sendData("ProxySuite", b.toByteArray());
+        p.getServer().sendData("proxysuite:channel", b.toByteArray());
     }
 
     public void locationReceived(ProxiedPlayer p, Location loc) {

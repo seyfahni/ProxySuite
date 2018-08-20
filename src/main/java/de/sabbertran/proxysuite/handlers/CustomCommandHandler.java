@@ -85,7 +85,7 @@ public class CustomCommandHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            p.getServer().sendData("ProxySuite", b.toByteArray());
+            p.getServer().sendData("proxysuite:channel", b.toByteArray());
 
             int count = 0;
             while (!main.getPlayerHandler().getWorldInfos().containsKey(p) && count < 100) {

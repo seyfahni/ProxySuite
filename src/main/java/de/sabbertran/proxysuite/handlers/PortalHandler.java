@@ -52,7 +52,7 @@ public class PortalHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        p.getServer().sendData("ProxySuite", b.toByteArray());
+        p.getServer().sendData("proxysuite:channel", b.toByteArray());
     }
 
     public void addPortalSuccess(final Portal p) {
@@ -168,7 +168,7 @@ public class PortalHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                s.sendData("ProxySuite", b.toByteArray());
+                s.sendData("proxysuite:channel", b.toByteArray());
             }
         }
     }
@@ -183,7 +183,7 @@ public class PortalHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        p.getLoc1().getServer().sendData("ProxySuite", b.toByteArray());
+        p.getLoc1().getServer().sendData("proxysuite:channel", b.toByteArray());
 
         final String sql = "DELETE FROM " + main.getTablePrefix() + "portals WHERE id = ?";
         main.getProxy().getScheduler().runAsync(main, new Runnable() {

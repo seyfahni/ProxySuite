@@ -23,7 +23,7 @@ public class PMessageListener implements Listener {
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent ev) {
-        if (ev.getTag().equals("ProxySuite")) {
+        if (ev.getTag().equals("proxysuite:channel")) {
             ByteArrayInputStream stream = new ByteArrayInputStream(ev.getData());
             DataInputStream in = new DataInputStream(stream);
             try {

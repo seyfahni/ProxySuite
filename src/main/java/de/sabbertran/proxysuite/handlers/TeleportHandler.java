@@ -41,7 +41,7 @@ public class TeleportHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            to.getServer().sendData("ProxySuite", b.toByteArray());
+            to.getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != to.getServer().getInfo())
                 p.connect(to.getServer().getInfo());
@@ -74,7 +74,7 @@ public class TeleportHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            loc.getServer().sendData("ProxySuite", b.toByteArray());
+            loc.getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != loc.getServer())
                 p.connect(loc.getServer());
@@ -97,7 +97,7 @@ public class TeleportHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            loc.getServer().sendData("ProxySuite", b.toByteArray());
+            loc.getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != loc.getServer())
                 p.connect(loc.getServer());
@@ -125,7 +125,7 @@ public class TeleportHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            w.getLocation().getServer().sendData("ProxySuite", b.toByteArray());
+            w.getLocation().getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != w.getLocation().getServer())
                 p.connect(w.getLocation().getServer());
@@ -153,7 +153,7 @@ public class TeleportHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            h.getLocation().getServer().sendData("ProxySuite", b.toByteArray());
+            h.getLocation().getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != h.getLocation().getServer())
                 p.connect(h.getLocation().getServer());
