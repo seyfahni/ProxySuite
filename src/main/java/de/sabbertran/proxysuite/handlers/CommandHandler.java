@@ -125,47 +125,7 @@ public class CommandHandler {
     }
 
     public void executeCommand(final CommandSender sender, final String command, final Runnable runnable) {
-        main.getProxy().getScheduler().runAsync(main, new Runnable() {
-            public void run() {
-                boolean run = true;
-                if (sender instanceof ProxiedPlayer) {
-                    final ProxiedPlayer p = (ProxiedPlayer) sender;
-
-                    ByteArrayOutputStream b = new ByteArrayOutputStream();
-                    DataOutputStream out = new DataOutputStream(b);
-                    try {
-                        out.writeUTF("CanExecuteCommand");
-                        out.writeUTF(p.getName());
-                        out.writeUTF(command);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    p.getServer().sendData("proxysuite:channel", b.toByteArray());
-
-                    int count = 0;
-                    while (getCheckedCommand(p, command) == null && count < 100) {
-                        try {
-                            Thread.sleep(100);
-                            count++;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (count != 100) {
-                        CheckedCommand cc = getCheckedCommand(p, command);
-                        run = cc.canExecute();
-                        checkedCommands.remove(cc);
-                    }
-                }
-
-                if (run) {
-                    runnable.run();
-                } else
-                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.region.blocked"));
-            }
-
-        });
+        main.getProxy().getScheduler().runAsync(main, runnable);
     }
 
     private CheckedCommand getCheckedCommand(ProxiedPlayer player, String command) {
