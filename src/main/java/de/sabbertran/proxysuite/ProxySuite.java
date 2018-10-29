@@ -142,7 +142,7 @@ public class ProxySuite extends Plugin {
             try {
                 getSQLConnection().createStatement().execute("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "players` (`id` INT " +
                         "NOT NULL" +
-                        " AUTO_INCREMENT, `uuid` CHAR(26) NOT NULL, `name` VARCHAR(255) NOT NULL, `vanished` " +
+                        " AUTO_INCREMENT, `uuid` CHAR(36) NOT NULL, `name` VARCHAR(255) NOT NULL, `vanished` " +
                         "BOOLEAN NOT NULL DEFAULT FALSE, `flying` BOOLEAN NOT NULL DEFAULT FALSE, `gamemode` VARCHAR" +
                         "(256) NOT NULL DEFAULT 'SURVIVAL', `online` BOOLEAN NOT NULL, `first_join` TIMESTAMP NOT " +
                         "NULL DEFAULT CURRENT_TIMESTAMP , `last_seen` TIMESTAMP NULL DEFAULT NULL, PRIMARY KEY (`id`), UNIQUE(`uuid`)" +
