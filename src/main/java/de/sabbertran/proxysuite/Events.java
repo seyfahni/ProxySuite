@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class Events implements Listener {
+
     private final ProxySuite main;
     private final ArrayList<ProxiedPlayer> justJoined;
 
@@ -71,7 +72,7 @@ public class Events implements Listener {
             if (firstSpawn != null)
                 if (main.getConfig().getBoolean("ProxySuite.ModulesEnabled.Teleport"))
                     if (main.getPlayerHandler().getPendingFirstSpawnTeleports().remove(p.getUniqueId())) {
-                        main.getTeleportHandler().teleportToLocation(p, firstSpawn, true, true);
+                        main.getTeleportHandler().teleportToLocation(p, firstSpawn, true, true, true);
                     }
         }
     }
@@ -169,7 +170,7 @@ public class Events implements Listener {
             main.getProxy().getScheduler().schedule(main, () -> {
                 main.getMessageHandler().broadcast(main.getMessageHandler().getMessage("join.broadcast").replace("%player%",
                         ev.getPlayer().getName()).replace("%player%", p.getName()).replace("%prefix%", main.getPlayerHandler
-                                                ().getPrefix(p)).replace("%suffix%", main.getPlayerHandler().getSuffix(p)));
+                                    ().getPrefix(p)).replace("%suffix%", main.getPlayerHandler().getSuffix(p)));
                 
                 if (main.getPermissionHandler().hasPermission(p, "proxysuite.messages.motd"))
                     main.getConfig().getStringList("ProxySuite.Messages.MOTD")

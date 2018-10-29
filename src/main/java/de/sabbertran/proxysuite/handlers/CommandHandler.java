@@ -117,6 +117,16 @@ public class CommandHandler {
         }
     }
 
+    public boolean hasFlag(String[] args, String flag, int after) {
+        for(int i = after; i < args.length; i++) {
+            if(args[i].equalsIgnoreCase(flag)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void sendUsage(CommandSender sender, Command cmd) {
         if (cmd instanceof ProxySuiteCommand)
             main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.usage" +

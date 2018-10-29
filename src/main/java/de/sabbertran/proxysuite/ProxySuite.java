@@ -157,7 +157,7 @@ public class ProxySuite extends Plugin {
                 getSQLConnection().createStatement().execute("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "warps` (`id` INT NOT NULL " +
                         "AUTO_INCREMENT, `name` VARCHAR(255) NOT NULL, `hidden` BOOLEAN NOT NULL, `server` VARCHAR" +
                         "(256) NOT NULL, `world` VARCHAR(255) NOT NULL, `x` DOUBLE NOT NULL, `y` DOUBLE NOT NULL, `z`" +
-                        " DOUBLE NOT NULL, `pitch` FLOAT NOT NULL, `yaw` FLOAT NOT NULL, PRIMARY KEY (`id`))");
+                        " DOUBLE NOT NULL, `pitch` FLOAT NOT NULL, `yaw` FLOAT NOT NULL, `local` BOOLEAN NOT NULL, PRIMARY KEY (`id`))");
                 getSQLConnection().createStatement().execute("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "homes` (`id` INT NOT NULL " +
                         "AUTO_INCREMENT, `player` VARCHAR(255) NOT NULL, `name` VARCHAR(255) NOT NULL, `server` " +
                         "VARCHAR(255) NOT NULL, `world` VARCHAR(255) NOT NULL, `x` DOUBLE NOT NULL, `y` DOUBLE NOT NULL, " +

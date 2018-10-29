@@ -28,10 +28,10 @@ public class TPCommand extends Command {
                             if (remainingCooldown == 0 || ignoreCooldown) {
                                 ProxiedPlayer to = main.getPlayerHandler().getPlayer(args[0], sender, true);
                                 if (to != null) {
-                                    main.getTeleportHandler().teleportToPlayer(p, to, ignoreCooldown);
+                                    main.getTeleportHandler().teleportToPlayer(p, to, ignoreCooldown, true);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                            ("command.player.notonline").replace("%player%", args[0]));
+                                                ("command.player.notonline").replace("%player%", args[0]));
                                 }
                             } else {
                                 main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +
@@ -54,7 +54,7 @@ public class TPCommand extends Command {
                                 boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                                 if (remainingCooldown == 0 || ignoreCooldown) {
                                     Location loc = new Location(p.getServer().getInfo(), "CURRENT", x, Double.MAX_VALUE, z);
-                                    main.getTeleportHandler().teleportToLocation(p, loc, ignoreCooldown, false);
+                                    main.getTeleportHandler().teleportToLocation(p, loc, ignoreCooldown, false, true);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +
                                             ".cooldown").replace("%cooldown%", "" + remainingCooldown));
@@ -72,14 +72,14 @@ public class TPCommand extends Command {
                             if (p1 != null) {
                                 if (p2 != null) {
                                     boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
-                                    main.getTeleportHandler().teleportToPlayer(p1, p2, ignoreCooldown);
+                                    main.getTeleportHandler().teleportToPlayer(p1, p2, ignoreCooldown, true);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                            ("command.player.notonline").replace("%player%", args[1]));
+                                                ("command.player.notonline").replace("%player%", args[1]));
                                 }
                             } else {
                                 main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                        ("command.player.notonline").replace("%player%", args[0]));
+                                            ("command.player.notonline").replace("%player%", args[0]));
                             }
                         } else {
                             main.getPermissionHandler().sendMissingPermissionInfo(sender);
@@ -97,7 +97,7 @@ public class TPCommand extends Command {
                                 boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                                 if (remainingCooldown == 0 || ignoreCooldown) {
                                     Location loc = new Location(p.getServer().getInfo(), "CURRENT", x, y, z);
-                                    main.getTeleportHandler().teleportToLocation(p, loc, ignoreCooldown, false);
+                                    main.getTeleportHandler().teleportToLocation(p, loc, ignoreCooldown, false, true);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +
                                             ".cooldown").replace("%cooldown%", "" + remainingCooldown));

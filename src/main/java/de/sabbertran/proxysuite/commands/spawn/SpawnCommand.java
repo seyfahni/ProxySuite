@@ -27,10 +27,10 @@ public class SpawnCommand extends Command {
                         int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
                         boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                         if (remainingCooldown == 0 || ignoreCooldown) {
-                            main.getTeleportHandler().teleportToLocation(p, normalSpawn, ignoreCooldown, false);
+                            main.getTeleportHandler().teleportToLocation(p, normalSpawn, ignoreCooldown, false, false);
                         } else {
                             main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                ("teleport.cooldown").replace("%cooldown%", "" + remainingCooldown));
+                                    ("teleport.cooldown").replace("%cooldown%", "" + remainingCooldown));
                         }
                     } else {
                         main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("spawn.notset"));

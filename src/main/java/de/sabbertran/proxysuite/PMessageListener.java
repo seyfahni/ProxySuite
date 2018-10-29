@@ -201,6 +201,13 @@ public class PMessageListener implements Listener {
                                 main.getPlayerHandler().getWorldInfos().put(p, worldInfo);
                             }       break;
                         }
+                    case "SendConfigMessage":
+                        {
+                            ProxiedPlayer p = main.getProxy().getPlayer(in.readUTF());
+                            if (p != null) {
+                                main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage(in.readUTF()));
+                            }       break;
+                        }
                     default:
                         break;
                 }

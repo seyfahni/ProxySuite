@@ -29,6 +29,7 @@ ProxySuite:
   Teleport:
     Timeout: 180
     DefaultCooldown: 10
+    DefaultWarmup: 3
   Homes:
     DefaultMaximum: 10
     DefaultMaximumPerWorld: 5
