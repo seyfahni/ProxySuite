@@ -14,10 +14,11 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
 
 public class CustomCommandHandler {
 
-    private ProxySuite main;
+    private final ProxySuite main;
 
     public CustomCommandHandler(ProxySuite main) {
         this.main = main;
@@ -49,7 +50,7 @@ public class CustomCommandHandler {
                     CustomCommand cmd = new CustomCommand(main, command, permission, messages, disabledServers);
                     main.getProxy().getPluginManager().registerCommand(main, cmd);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    main.getLogger().log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -72,7 +73,7 @@ public class CustomCommandHandler {
                 if (rs.next())
                     totalPlayers = rs.getInt("count");
             } catch (SQLException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
             output = output.replace("%totalPlayers%", "" + totalPlayers);
         }
@@ -83,9 +84,9 @@ public class CustomCommandHandler {
                 out.writeUTF("GetPlayerWorldInfo");
                 out.writeUTF(p.getName());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            p.getServer().sendData("ProxySuite", b.toByteArray());
+            p.getServer().sendData("proxysuite:channel", b.toByteArray());
 
             int count = 0;
             while (!main.getPlayerHandler().getWorldInfos().containsKey(p) && count < 100) {
@@ -93,7 +94,7 @@ public class CustomCommandHandler {
                     count++;
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    main.getLogger().log(Level.SEVERE, null, e);
                 }
             }
 

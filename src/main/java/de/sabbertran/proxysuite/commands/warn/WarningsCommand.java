@@ -6,20 +6,19 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class WarningsCommand extends Command {
-    private ProxySuite main;
-    private WarningsCommand self;
+
+    private final ProxySuite main;
 
     public WarningsCommand(ProxySuite main) {
         super("warnings", null, new String[]{"warns"});
         this.main = main;
-        this.self = this;
     }
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {
-        main.getCommandHandler().executeCommand(sender, "warnings", new Runnable() {
-            public void run() {
-                if (args.length == 0) {
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            switch (args.length) {
+                case 0:
                     if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.warnings")) {
                         if (sender instanceof ProxiedPlayer) {
                             ProxiedPlayer p = (ProxiedPlayer) sender;
@@ -29,8 +28,8 @@ public class WarningsCommand extends Command {
                         }
                     } else {
                         main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                    }
-                } else if (args.length == 1) {
+                    }   break;
+                case 1:
                     if (args[0].equalsIgnoreCase("hideinfo")) {
                         if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.warnings.hideinfo")) {
                             if (sender instanceof ProxiedPlayer) {
@@ -51,10 +50,10 @@ public class WarningsCommand extends Command {
                         } else {
                             main.getPermissionHandler().sendMissingPermissionInfo(sender);
                         }
-                    }
-                } else {
-                    main.getCommandHandler().sendUsage(sender, self);
-                }
+                    }   break;
+                default:
+                    main.getCommandHandler().sendUsage(sender, this);
+                    break;
             }
         });
     }

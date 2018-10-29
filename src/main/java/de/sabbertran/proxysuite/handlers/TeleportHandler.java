@@ -12,19 +12,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 
 public class TeleportHandler {
-    private HashMap<ProxiedPlayer, Location> lastPositions;
-    private ProxySuite main;
-    private ArrayList<PendingTeleport> pendingTeleports;
-    private HashMap<ProxiedPlayer, Date> lastTeleports;
+    private final HashMap<ProxiedPlayer, Location> lastPositions;
+    private final ProxySuite main;
+    private final ArrayList<PendingTeleport> pendingTeleports;
+    private final HashMap<ProxiedPlayer, Date> lastTeleports;
 
     public TeleportHandler(ProxySuite main) {
         this.main = main;
 
-        pendingTeleports = new ArrayList<PendingTeleport>();
-        lastTeleports = new HashMap<ProxiedPlayer, Date>();
-        lastPositions = new HashMap<ProxiedPlayer, Location>();
+        pendingTeleports = new ArrayList<>();
+        lastTeleports = new HashMap<>();
+        lastPositions = new HashMap<>();
     }
 
     public void teleportToPlayer(ProxiedPlayer p, ProxiedPlayer to, boolean ignoreCooldown) {
@@ -39,9 +40,9 @@ public class TeleportHandler {
                 out.writeUTF("PLAYER");
                 out.writeUTF(to.getName());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            to.getServer().sendData("ProxySuite", b.toByteArray());
+            to.getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != to.getServer().getInfo())
                 p.connect(to.getServer().getInfo());
@@ -72,9 +73,9 @@ public class TeleportHandler {
                 out.writeUTF("" + loc.getPitch());
                 out.writeUTF("" + loc.getYaw());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            loc.getServer().sendData("ProxySuite", b.toByteArray());
+            loc.getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != loc.getServer())
                 p.connect(loc.getServer());
@@ -95,9 +96,9 @@ public class TeleportHandler {
                 out.writeUTF("SPAWN");
                 out.writeUTF(loc.getWorld());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            loc.getServer().sendData("ProxySuite", b.toByteArray());
+            loc.getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != loc.getServer())
                 p.connect(loc.getServer());
@@ -123,9 +124,9 @@ public class TeleportHandler {
                 out.writeUTF("" + w.getLocation().getPitch());
                 out.writeUTF("" + w.getLocation().getYaw());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            w.getLocation().getServer().sendData("ProxySuite", b.toByteArray());
+            w.getLocation().getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != w.getLocation().getServer())
                 p.connect(w.getLocation().getServer());
@@ -151,9 +152,9 @@ public class TeleportHandler {
                 out.writeUTF("" + h.getLocation().getPitch());
                 out.writeUTF("" + h.getLocation().getYaw());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            h.getLocation().getServer().sendData("ProxySuite", b.toByteArray());
+            h.getLocation().getServer().sendData("proxysuite:channel", b.toByteArray());
 
             if (p.getServer().getInfo() != h.getLocation().getServer())
                 p.connect(h.getLocation().getServer());
@@ -165,11 +166,7 @@ public class TeleportHandler {
     private void savePlayerLocation(final ProxiedPlayer p) {
         if (main.getPermissionHandler().hasPermission(p, "proxysuite.teleport.savelocation")) {
             main.getPositionHandler().requestPosition(p);
-            main.getPositionHandler().addPositionRunnable(p, new Runnable() {
-                public void run() {
-                    lastPositions.put(p, main.getPositionHandler().getLocalPositions().remove(p.getUniqueId()));
-                }
-            });
+            main.getPositionHandler().addPositionRunnable(p, () -> lastPositions.put(p, main.getPositionHandler().getLocalPositions().remove(p.getUniqueId())));
         }
     }
 

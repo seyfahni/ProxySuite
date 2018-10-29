@@ -7,20 +7,19 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class TPCommand extends Command {
-    private ProxySuite main;
-    private TPCommand self;
+
+    private final ProxySuite main;
 
     public TPCommand(ProxySuite main) {
         super("tp");
         this.main = main;
-        this.self = this;
     }
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {
-        main.getCommandHandler().executeCommand(sender, "tp", new Runnable() {
-            public void run() {
-                if (args.length == 1) {
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            switch (args.length) {
+                case 1:
                     if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.tp")) {
                         if (sender instanceof ProxiedPlayer) {
                             ProxiedPlayer p = (ProxiedPlayer) sender;
@@ -32,7 +31,7 @@ public class TPCommand extends Command {
                                     main.getTeleportHandler().teleportToPlayer(p, to, ignoreCooldown);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                            ("command.player.notonline").replace("%player%", args[0]));
+                                                            ("command.player.notonline").replace("%player%", args[0]));
                                 }
                             } else {
                                 main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +
@@ -43,8 +42,8 @@ public class TPCommand extends Command {
                         }
                     } else {
                         main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                    }
-                } else if (args.length == 2) {
+                    }   break;
+                case 2:
                     try {
                         if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.tp.coordinates")) {
                             int x = Integer.parseInt(args[0]);
@@ -76,17 +75,17 @@ public class TPCommand extends Command {
                                     main.getTeleportHandler().teleportToPlayer(p1, p2, ignoreCooldown);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                            ("command.player.notonline").replace("%player%", args[1]));
+                                                            ("command.player.notonline").replace("%player%", args[1]));
                                 }
                             } else {
                                 main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                        ("command.player.notonline").replace("%player%", args[0]));
+                                                        ("command.player.notonline").replace("%player%", args[0]));
                             }
                         } else {
                             main.getPermissionHandler().sendMissingPermissionInfo(sender);
                         }
-                    }
-                } else if (args.length == 3) {
+                    }   break;
+                case 3:
                     if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.tp.coordinates")) {
                         try {
                             int x = Integer.parseInt(args[0]);
@@ -112,10 +111,10 @@ public class TPCommand extends Command {
                         }
                     } else {
                         main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                    }
-                } else {
-                    main.getCommandHandler().sendUsage(sender, self);
-                }
+                    }   break;
+                default:
+                    main.getCommandHandler().sendUsage(sender, this);
+                    break;
             }
         });
     }

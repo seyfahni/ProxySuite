@@ -17,29 +17,30 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class PlayerHandler {
 
-    private ProxySuite main;
-    private ArrayList<UUID> pendingFirstSpawnTeleports;
-    private HashMap<ProxiedPlayer, String> prefixes;
-    private HashMap<ProxiedPlayer, String> suffixes;
-    private ArrayList<ProxiedPlayer> vanishedPlayers;
-    private HashMap<String, Integer> ips;
-    private HashMap<ProxiedPlayer, WorldInfo> worldInfos;
-    private ArrayList<ProxiedPlayer> flying;
-    private HashMap<ProxiedPlayer, String> gamemode;
+    private final ProxySuite main;
+    private final ArrayList<UUID> pendingFirstSpawnTeleports;
+    private final HashMap<ProxiedPlayer, String> prefixes;
+    private final HashMap<ProxiedPlayer, String> suffixes;
+    private final ArrayList<ProxiedPlayer> vanishedPlayers;
+    private final HashMap<String, Integer> ips;
+    private final HashMap<ProxiedPlayer, WorldInfo> worldInfos;
+    private final ArrayList<ProxiedPlayer> flying;
+    private final HashMap<ProxiedPlayer, String> gamemode;
 
     public PlayerHandler(ProxySuite main) {
         this.main = main;
-        pendingFirstSpawnTeleports = new ArrayList<UUID>();
-        prefixes = new HashMap<ProxiedPlayer, String>();
-        suffixes = new HashMap<ProxiedPlayer, String>();
-        vanishedPlayers = new ArrayList<ProxiedPlayer>();
-        ips = new HashMap<String, Integer>();
-        worldInfos = new HashMap<ProxiedPlayer, WorldInfo>();
-        flying = new ArrayList<ProxiedPlayer>();
-        gamemode = new HashMap<ProxiedPlayer, String>();
+        pendingFirstSpawnTeleports = new ArrayList<>();
+        prefixes = new HashMap<>();
+        suffixes = new HashMap<>();
+        vanishedPlayers = new ArrayList<>();
+        ips = new HashMap<>();
+        worldInfos = new HashMap<>();
+        flying = new ArrayList<>();
+        gamemode = new HashMap<>();
     }
 
     public ProxiedPlayer getPlayer(String name, CommandSender questioner, boolean useLevenshtein) {
@@ -53,7 +54,7 @@ public class PlayerHandler {
                 if (!vanishedPlayers.contains(p) || main.getPermissionHandler().hasPermission(questioner, "proxysuite.vanish.useincommands", false))
                     return p;
             } else if (useLevenshtein) {
-                HashMap<ProxiedPlayer, Integer> distances = new HashMap<ProxiedPlayer, Integer>();
+                HashMap<ProxiedPlayer, Integer> distances = new HashMap<>();
                 for (ProxiedPlayer p1 : main.getProxy().getPlayers())
                     if (questioner != p1 && (!vanishedPlayers.contains(p1) || main.getPermissionHandler().hasPermission
                             (questioner, "proxysuite.vanish.useincommands", false)))
@@ -87,7 +88,7 @@ public class PlayerHandler {
                 try {
                     main.getSQLConnection().createStatement().execute(sql);
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    main.getLogger().log(Level.SEVERE, null, e);
                 }
             } else {
                 pendingFirstSpawnTeleports.add(con.getUniqueId());
@@ -96,31 +97,25 @@ public class PlayerHandler {
                 try {
                     main.getSQLConnection().createStatement().execute(sql);
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    main.getLogger().log(Level.SEVERE, null, e);
                 }
 
-                main.getProxy().getScheduler().schedule(main, new Runnable() {
-                    public void run() {
-                        announceNewPlayer(con.getName());
-                    }
-                }, 500L, TimeUnit.MILLISECONDS);
+                main.getProxy().getScheduler().schedule(main, () -> announceNewPlayer(con.getName()), 500L, TimeUnit.MILLISECONDS);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            main.getLogger().log(Level.SEVERE, null, e);
         }
 
     }
 
     public void registerLogout(final ProxiedPlayer p) {
-        main.getProxy().getScheduler().runAsync(main, new Runnable() {
-            public void run() {
-                String sql = "UPDATE " + main.getTablePrefix() + "players SET name = '" + p.getName() + "', online = " +
-                        "'0', last_seen = now() WHERE uuid = '" + p.getUniqueId() + "'";
-                try {
-                    main.getSQLConnection().createStatement().execute(sql);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            String sql = "UPDATE " + main.getTablePrefix() + "players SET name = '" + p.getName() + "', online = " +
+                    "'0', last_seen = now() WHERE uuid = '" + p.getUniqueId() + "'";
+            try {
+                main.getSQLConnection().createStatement().execute(sql);
+            } catch (SQLException e) {
+                main.getLogger().log(Level.SEVERE, null, e);
             }
         });
     }
@@ -133,9 +128,9 @@ public class PlayerHandler {
                 out.writeUTF("Vanish");
                 out.writeUTF(p.getName());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            p.getServer().sendData("ProxySuite", b.toByteArray());
+            p.getServer().sendData("proxysuite:channel", b.toByteArray());
         }
     }
 
@@ -147,9 +142,9 @@ public class PlayerHandler {
                 out.writeUTF("EnableFlight");
                 out.writeUTF(p.getName());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            p.getServer().sendData("ProxySuite", b.toByteArray());
+            p.getServer().sendData("proxysuite:channel", b.toByteArray());
         }
     }
 
@@ -161,22 +156,20 @@ public class PlayerHandler {
                 out.writeUTF("DisableFlight");
                 out.writeUTF(p.getName());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            p.getServer().sendData("ProxySuite", b.toByteArray());
+            p.getServer().sendData("proxysuite:channel", b.toByteArray());
         }
     }
 
     public void writeFlyToDatabase(final ProxiedPlayer p, final boolean flying) {
-        main.getProxy().getScheduler().runAsync(main, new Runnable() {
-            public void run() {
-                try {
-                    String sql = "UPDATE " + main.getTablePrefix() + "players SET flying = '" + (flying ? "1"
-                            : "0") + "' WHERE uuid = '" + p.getUniqueId() + "'";
-                    main.getSQLConnection().createStatement().execute(sql);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            try {
+                String sql = "UPDATE " + main.getTablePrefix() + "players SET flying = '" + (flying ? "1"
+                        : "0") + "' WHERE uuid = '" + p.getUniqueId() + "'";
+                main.getSQLConnection().createStatement().execute(sql);
+            } catch (SQLException e) {
+                main.getLogger().log(Level.SEVERE, null, e);
             }
         });
     }
@@ -185,16 +178,14 @@ public class PlayerHandler {
         this.gamemode.put(p, gamemode);
         sendGamemodeToServer(p, gamemode);
 
-        main.getProxy().getScheduler().runAsync(main, new Runnable() {
-            public void run() {
-                try {
-                    String sql = "UPDATE " + main.getTablePrefix() + "players SET gamemode = '" + gamemode + "', flying = "
-                            + (gamemode.equals("CREATIVE") || gamemode.equals("SPECTATOR") ? "1" : "0") + " WHERE uuid = " +
-                            "'" + p.getUniqueId() + "'";
-                    main.getSQLConnection().createStatement().execute(sql);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            try {
+                String sql = "UPDATE " + main.getTablePrefix() + "players SET gamemode = '" + gamemode + "', flying = "
+                        + (gamemode.equals("CREATIVE") || gamemode.equals("SPECTATOR") ? "1" : "0") + " WHERE uuid = " +
+                        "'" + p.getUniqueId() + "'";
+                main.getSQLConnection().createStatement().execute(sql);
+            } catch (SQLException e) {
+                main.getLogger().log(Level.SEVERE, null, e);
             }
         });
 
@@ -211,9 +202,9 @@ public class PlayerHandler {
                 out.writeUTF(p.getName());
                 out.writeUTF(gamemode);
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            p.getServer().sendData("ProxySuite", b.toByteArray());
+            p.getServer().sendData("proxysuite:channel", b.toByteArray());
         }
     }
 
@@ -225,9 +216,9 @@ public class PlayerHandler {
                 out.writeUTF("Unvanish");
                 out.writeUTF(p.getName());
             } catch (IOException e) {
-                e.printStackTrace();
+                main.getLogger().log(Level.SEVERE, null, e);
             }
-            p.getServer().sendData("ProxySuite", b.toByteArray());
+            p.getServer().sendData("proxysuite:channel", b.toByteArray());
         }
     }
 
@@ -248,9 +239,9 @@ public class PlayerHandler {
                         out.writeUTF("" + volume);
                         out.writeUTF("" + pitch);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        main.getLogger().log(Level.SEVERE, null, e);
                     }
-                    p.getServer().sendData("ProxySuite", b.toByteArray());
+                    p.getServer().sendData("proxysuite:channel", b.toByteArray());
                 }
             }
         }

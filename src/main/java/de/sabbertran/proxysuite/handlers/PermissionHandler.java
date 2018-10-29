@@ -8,22 +8,22 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 public class PermissionHandler {
 
-    private ProxySuite main;
-    private List<String> availablePermissions;
-    private HashMap<String, List<String>> permissions;
+    private final ProxySuite main;
+    private final List<String> availablePermissions;
+    private final HashMap<String, List<String>> permissions;
 
     public PermissionHandler(ProxySuite main) {
         this.main = main;
-        permissions = new HashMap<String, List<String>>();
-        availablePermissions = new ArrayList<String>();
+        permissions = new HashMap<>();
+        availablePermissions = new ArrayList<>();
     }
 
     public void updatePermissions() {
-        for (ProxiedPlayer p : main.getProxy().getPlayers())
-            updatePermissions(p);
+        main.getProxy().getPlayers().forEach(p -> updatePermissions(p));
     }
 
     public void updatePermissions(ProxiedPlayer p) {
@@ -35,9 +35,9 @@ public class PermissionHandler {
             for (String perm : availablePermissions)
                 out.writeUTF(perm);
         } catch (IOException e) {
-            e.printStackTrace();
+            main.getLogger().log(Level.SEVERE, null, e);
         }
-        p.getServer().sendData("ProxySuite", b.toByteArray());
+        p.getServer().sendData("proxysuite:channel", b.toByteArray());
     }
 
     public void readAvailablePermissionsFromFile() {
@@ -50,16 +50,13 @@ public class PermissionHandler {
                 if (!line.trim().equals("") && !line.startsWith("#"))
                     availablePermissions.add(line.trim());
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            main.getLogger().log(Level.SEVERE, null, e);
         }
     }
 
     public void resetPermissions() {
-        for (ProxiedPlayer p : main.getProxy().getPlayers())
-            resetPermissions(p);
+        main.getProxy().getPlayers().forEach(p -> resetPermissions(p));
     }
 
     public void resetPermissions(CommandSender player) {
@@ -85,7 +82,7 @@ public class PermissionHandler {
                     for (String s : permission.toLowerCase().split("\\.")) {
                         check = check + s + ".";
                         if (permissions.get(p.getName()).contains(check + "*")) {
-                            main.getLogger().info(sender.getName() + " has '" + check + "*'");
+                            main.getLogger().log(Level.INFO, "{0} has ''{1}*''", new Object[]{sender.getName(), check});
                             return true;
                         }
                     }

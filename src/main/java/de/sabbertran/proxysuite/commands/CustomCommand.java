@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class CustomCommand extends Command {
-    private ProxySuite main;
-    private String command;
-    private String permission;
-    private String[] messages;
-    private ArrayList<String> disabledServers;
+
+    private final ProxySuite main;
+    private final String command;
+    private final String permission;
+    private final String[] messages;
+    private final ArrayList<String> disabledServers;
 
     public CustomCommand(ProxySuite main, String command, String permission, String[] messages, ArrayList<String>
             disabledServers) {
@@ -27,50 +28,42 @@ public class CustomCommand extends Command {
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {
-        main.getCommandHandler().executeCommand(sender, command, new Runnable() {
-            public void run() {
-                if (sender instanceof ProxiedPlayer) {
-                    final ProxiedPlayer p = (ProxiedPlayer) sender;
-                    if (permission.trim().equals("") || main.getPermissionHandler().hasPermission(sender, permission)) {
-                        if (!disabledServers.contains(p.getServer().getInfo().getName())) {
-                            for (final String s : messages) {
-                                final int delay = s.matches("^%delay:[0-9]+%.*$") ? Integer.parseInt(s.split("%")[1].substring(6)) : 0;
-                                Runnable runnable = new Runnable() {
-                                    public void run() {
-                                        String s2 = s.replace("%delay:" + delay + "%", "");
-                                        if (s2.trim().startsWith("/") || s2.trim().startsWith("\\")) {
-                                            s2 = s2.trim();
-                                            for (int i = 0; i < args.length; i++)
-                                                s2 = s2.replace("$" + (i + 1), args[i]);
-                                            if (s2.startsWith("/"))
-                                                p.chat(s2);
-                                            else if (s2.startsWith("\\\\"))
-                                                main.getProxy().getPluginManager().dispatchCommand(main.getProxy().getConsole(), s2.substring(2).replace("%player%", sender.getName()));
-                                            else
-                                                main.getProxy().getPluginManager().dispatchCommand(sender, s2.substring(1));
-                                        } else {
-                                            main.getMessageHandler().sendMessage(p, main.getCustomCommandHandler().translateVariables(s2, p));
-                                        }
-                                    }
-                                };
-                                if (delay > 0)
-                                    main.getProxy().getScheduler().schedule(main, runnable, delay, TimeUnit.MILLISECONDS);
-                                else
-                                    runnable.run();
-                            }
-                        } else {
-                            String cmd = "/" + command;
-                            for (String s : args)
-                                cmd += " " + args;
-                            cmd = cmd.trim();
-                            p.chat(cmd);
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            if (sender instanceof ProxiedPlayer) {
+                final ProxiedPlayer p = (ProxiedPlayer) sender;
+                if (permission.trim().equals("") || main.getPermissionHandler().hasPermission(sender, permission)) {
+                    if (!disabledServers.contains(p.getServer().getInfo().getName())) {
+                        for (final String s : messages) {
+                            final int delay = s.matches("^%delay:[0-9]+%.*$") ? Integer.parseInt(s.split("%")[1].substring(6)) : 0;
+                            Runnable runnable = () -> {
+                                String s2 = s.replace("%delay:" + delay + "%", "");
+                                if (s2.trim().startsWith("/") || s2.trim().startsWith("\\")) {
+                                    s2 = s2.trim();
+                                    for (int i = 0; i < args.length; i++)
+                                        s2 = s2.replace("$" + (i + 1), args[i]);
+                                    if (s2.startsWith("/"))
+                                        p.chat(s2);
+                                    else if (s2.startsWith("\\\\"))
+                                        main.getProxy().getPluginManager().dispatchCommand(main.getProxy().getConsole(), s2.substring(2).replace("%player%", sender.getName()));
+                                    else
+                                        main.getProxy().getPluginManager().dispatchCommand(sender, s2.substring(1));
+                                } else {
+                                    main.getMessageHandler().sendMessage(p, main.getCustomCommandHandler().translateVariables(s2, p));
+                                }
+                            };
+                            if (delay > 0)
+                                main.getProxy().getScheduler().schedule(main, runnable, delay, TimeUnit.MILLISECONDS);
+                            else
+                                runnable.run();
                         }
                     } else {
-                        main.getPermissionHandler().sendMissingPermissionInfo(sender);
+                        p.chat("/" + command + " " + String.join(" ", args));
                     }
-                } else
-                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.noplayer"));
-            }
+                } else {
+                    main.getPermissionHandler().sendMissingPermissionInfo(sender);
+                }
+            } else
+                main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.noplayer"));
         });
     }
 }

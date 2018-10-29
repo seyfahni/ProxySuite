@@ -18,15 +18,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 public class PortalHandler {
-    private ProxySuite main;
-    private ArrayList<Portal> portals;
-    private List<String> validTypes;
+    private final ProxySuite main;
+    private final ArrayList<Portal> portals;
+    private final List<String> validTypes;
 
     public PortalHandler(ProxySuite main) {
         this.main = main;
-        portals = new ArrayList<Portal>();
+        portals = new ArrayList<>();
         validTypes = Arrays.asList(new String[]{"NOTHING", "NORMAL", "WATER", "NETHER"});
     }
 
@@ -50,9 +51,9 @@ public class PortalHandler {
             out.writeUTF(type);
             out.writeUTF(destination.getName());
         } catch (IOException e) {
-            e.printStackTrace();
+            main.getLogger().log(Level.SEVERE, null, e);
         }
-        p.getServer().sendData("ProxySuite", b.toByteArray());
+        p.getServer().sendData("proxysuite:channel", b.toByteArray());
     }
 
     public void addPortalSuccess(final Portal p) {
@@ -80,17 +81,15 @@ public class PortalHandler {
         portals.add(p);
 
         final String sql2 = sql;
-        main.getProxy().getScheduler().runAsync(main, new Runnable() {
-            public void run() {
-                try {
-                    PreparedStatement st = main.getSQLConnection().prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
-                    st.execute();
-                    ResultSet generated = st.getGeneratedKeys();
-                    if (generated.next())
-                        p.setId(generated.getInt(1));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            try {
+                PreparedStatement st = main.getSQLConnection().prepareStatement(sql2, Statement.RETURN_GENERATED_KEYS);
+                st.execute();
+                ResultSet generated = st.getGeneratedKeys();
+                if (generated.next())
+                    p.setId(generated.getInt(1));
+            } catch (SQLException e) {
+                main.getLogger().log(Level.SEVERE, null, e);
             }
         });
     }
@@ -114,7 +113,7 @@ public class PortalHandler {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            main.getLogger().log(Level.SEVERE, null, e);
         }
     }
 
@@ -166,9 +165,9 @@ public class PortalHandler {
                     out.writeUTF("" + p.getLoc2().getY());
                     out.writeUTF("" + p.getLoc2().getZ());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    main.getLogger().log(Level.SEVERE, null, e);
                 }
-                s.sendData("ProxySuite", b.toByteArray());
+                s.sendData("proxysuite:channel", b.toByteArray());
             }
         }
     }
@@ -181,20 +180,18 @@ public class PortalHandler {
             out.writeUTF("DeletePortal");
             out.writeUTF(p.getName());
         } catch (IOException e) {
-            e.printStackTrace();
+            main.getLogger().log(Level.SEVERE, null, e);
         }
-        p.getLoc1().getServer().sendData("ProxySuite", b.toByteArray());
+        p.getLoc1().getServer().sendData("proxysuite:channel", b.toByteArray());
 
         final String sql = "DELETE FROM " + main.getTablePrefix() + "portals WHERE id = ?";
-        main.getProxy().getScheduler().runAsync(main, new Runnable() {
-            public void run() {
-                try {
-                    PreparedStatement pst = main.getSQLConnection().prepareCall(sql);
-                    pst.setInt(1, p.getId());
-                    pst.execute();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            try {
+                PreparedStatement pst = main.getSQLConnection().prepareCall(sql);
+                pst.setInt(1, p.getId());
+                pst.execute();
+            } catch (SQLException e) {
+                main.getLogger().log(Level.SEVERE, null, e);
             }
         });
     }

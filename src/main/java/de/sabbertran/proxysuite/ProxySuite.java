@@ -14,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.logging.Level;
 
 public class ProxySuite extends Plugin {
 
@@ -46,6 +47,7 @@ public class ProxySuite extends Plugin {
         instance = this;
     }
 
+    @Override
     public void onEnable() {
         if (!getDataFolder().exists()) {
             getDataFolder().mkdir();
@@ -78,7 +80,7 @@ public class ProxySuite extends Plugin {
         try {
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new InputStreamReader(new FileInputStream(configFile), "UTF8"));
         } catch (IOException e) {
-            e.printStackTrace();
+            this.getLogger().log(Level.SEVERE, null, e);
         }
         sql = config.getStringList("ProxySuite.SQL");
         tablePrefix = config.getString("ProxySuite.TablePrefix");
@@ -112,23 +114,21 @@ public class ProxySuite extends Plugin {
         readDatabase();
 
         getProxy().getPluginManager().registerListener(this, new Events(this));
-        getProxy().registerChannel("ProxySuite");
+        getProxy().registerChannel("proxysuite:channel");
         getProxy().getPluginManager().registerListener(this, new PMessageListener(this));
 
-        for (ServerInfo s : getProxy().getServers().values())
-            portalHandler.sendPortalsToServer(s);
+        getProxy().getServers().values().forEach(s -> portalHandler.sendPortalsToServer(s));
 
         bungeeTabListPlusInstalled = getProxy().getPluginManager().getPlugin("BungeeTabListPlus") != null;
 
-        getLogger().info(getDescription().getName() + " " + getDescription().getVersion() + " by " + getDescription()
-                .getAuthor() + " enabled");
+        getLogger().log(Level.INFO, "{0} {1} by {2} enabled", new Object[]{getDescription().getName(), getDescription().getVersion(), getDescription().getAuthor()});
     }
 
+    @Override
     public void onDisable() {
         getProxy().getScheduler().cancel(this);
 
-        getLogger().info(getDescription().getName() + " " + getDescription().getVersion() + " by " + getDescription()
-                .getAuthor() + " disabled");
+        getLogger().log(Level.INFO, "{0} {1} by {2} disabled", new Object[]{getDescription().getName(), getDescription().getVersion(), getDescription().getAuthor()});
     }
 
     public void readDatabase() {
@@ -142,7 +142,7 @@ public class ProxySuite extends Plugin {
             try {
                 getSQLConnection().createStatement().execute("CREATE TABLE IF NOT EXISTS `" + tablePrefix + "players` (`id` INT " +
                         "NOT NULL" +
-                        " AUTO_INCREMENT, `uuid` VARCHAR(255) NOT NULL, `name` VARCHAR(255) NOT NULL, `vanished` " +
+                        " AUTO_INCREMENT, `uuid` CHAR(26) NOT NULL, `name` VARCHAR(255) NOT NULL, `vanished` " +
                         "BOOLEAN NOT NULL DEFAULT FALSE, `flying` BOOLEAN NOT NULL DEFAULT FALSE, `gamemode` VARCHAR" +
                         "(256) NOT NULL DEFAULT 'SURVIVAL', `online` BOOLEAN NOT NULL, `first_join` TIMESTAMP NOT " +
                         "NULL DEFAULT CURRENT_TIMESTAMP , `last_seen` TIMESTAMP NULL DEFAULT NULL, PRIMARY KEY (`id`), UNIQUE(`uuid`)" +
@@ -187,7 +187,7 @@ public class ProxySuite extends Plugin {
                         " NULL AUTO_INCREMENT, `player` VARCHAR(255) NOT NULL, `message` TEXT NOT NULL, `date` " +
                         "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`))");
             } catch (SQLException e) {
-                e.printStackTrace();
+                this.getLogger().log(Level.SEVERE, null, e);
             }
         } else {
             getLogger().info("Error while setting up the SQL Connection! Please check you SQL data!");
@@ -208,10 +208,8 @@ public class ProxySuite extends Plugin {
                 String url = "jdbc:mysql://" + sql.get(0) + ":" + sql.get(1) + "/" + sql.get(2);
                 sql_connection = DriverManager.getConnection(url, sql.get(3), sql.get(4));
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | SQLException e) {
+            this.getLogger().log(Level.SEVERE, null, e);
         }
 
         return sql_connection;

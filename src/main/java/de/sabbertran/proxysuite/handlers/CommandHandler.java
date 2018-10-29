@@ -33,25 +33,18 @@ import de.sabbertran.proxysuite.commands.warp.WarpCommand;
 import de.sabbertran.proxysuite.commands.warp.WarpsCommand;
 import de.sabbertran.proxysuite.utils.CheckedCommand;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class CommandHandler {
 
-    private ProxySuite main;
-    private HashMap<ServerInfo, Boolean> worldGuardLoaded;
-    private ArrayList<CheckedCommand> checkedCommands;
+    private final ProxySuite main;
+    private final ArrayList<CheckedCommand> checkedCommands;
 
     public CommandHandler(ProxySuite main) {
         this.main = main;
-        checkedCommands = new ArrayList<CheckedCommand>();
+        checkedCommands = new ArrayList<>();
     }
 
     public void registerCommands() {
@@ -122,58 +115,6 @@ public class CommandHandler {
             //Gamemode Command
             main.getProxy().getPluginManager().registerCommand(main, new GamemodeCommand(main));
         }
-    }
-
-    public void executeCommand(final CommandSender sender, final String command, final Runnable runnable) {
-        main.getProxy().getScheduler().runAsync(main, new Runnable() {
-            public void run() {
-                boolean run = true;
-                if (sender instanceof ProxiedPlayer) {
-                    final ProxiedPlayer p = (ProxiedPlayer) sender;
-
-                    ByteArrayOutputStream b = new ByteArrayOutputStream();
-                    DataOutputStream out = new DataOutputStream(b);
-                    try {
-                        out.writeUTF("CanExecuteCommand");
-                        out.writeUTF(p.getName());
-                        out.writeUTF(command);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    p.getServer().sendData("ProxySuite", b.toByteArray());
-
-                    int count = 0;
-                    while (getCheckedCommand(p, command) == null && count < 100) {
-                        try {
-                            Thread.sleep(100);
-                            count++;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (count != 100) {
-                        CheckedCommand cc = getCheckedCommand(p, command);
-                        run = cc.canExecute();
-                        checkedCommands.remove(cc);
-                    }
-                }
-
-                if (run) {
-                    runnable.run();
-                } else
-                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.region.blocked"));
-            }
-
-        });
-    }
-
-    private CheckedCommand getCheckedCommand(ProxiedPlayer player, String command) {
-        for (CheckedCommand cc : checkedCommands) {
-            if (cc.getPlayer() == player && cc.getCommand().equals(command))
-                return cc;
-        }
-        return null;
     }
 
     public void sendUsage(CommandSender sender, Command cmd) {

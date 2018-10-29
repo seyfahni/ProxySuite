@@ -6,20 +6,18 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class NotesCommand extends Command {
-    private ProxySuite main;
-    private NotesCommand self;
+    private final ProxySuite main;
 
     public NotesCommand(ProxySuite main) {
         super("notes");
         this.main = main;
-        this.self = this;
     }
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {
-        main.getCommandHandler().executeCommand(sender, "notes", new Runnable() {
-            public void run() {
-                if (args.length == 0) {
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            switch (args.length) {
+                case 0:
                     if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.notes")) {
                         if (sender instanceof ProxiedPlayer) {
                             ProxiedPlayer p = (ProxiedPlayer) sender;
@@ -29,17 +27,17 @@ public class NotesCommand extends Command {
                         }
                     } else {
                         main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                    }
-                } else if (args.length == 1) {
+                    }   break;
+                case 1:
                     if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.notes.others")) {
                         String player = args[0];
                         main.getNoteHandler().sendNoteList(player, sender);
                     } else {
                         main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                    }
-                } else {
-                    main.getCommandHandler().sendUsage(sender, self);
-                }
+                    }   break;
+                default:
+                    main.getCommandHandler().sendUsage(sender, this);
+                    break;
             }
         });
     }

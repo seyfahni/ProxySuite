@@ -6,7 +6,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class BackCommand extends Command {
-    private ProxySuite main;
+
+    private final ProxySuite main;
 
     public BackCommand(ProxySuite main) {
         super("back");
@@ -16,31 +17,29 @@ public class BackCommand extends Command {
     @Override
     public void execute(final CommandSender sender, String[] args) {
         //TODO /back <name> für andere Spieler
-        main.getCommandHandler().executeCommand(sender, "back", new Runnable() {
-            public void run() {
-                if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.back")) {
-                    if (sender instanceof ProxiedPlayer) {
-                        ProxiedPlayer p = (ProxiedPlayer) sender;
-                        if (main.getTeleportHandler().getLastPositions().containsKey(p)) {
-                            int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
-                            boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
-                            if (remainingCooldown == 0 || ignoreCooldown) {
-                                main.getTeleportHandler().teleportToLocation(p, main.getTeleportHandler().getLastPositions().get
-                                        (p), ignoreCooldown, false);
-                            } else {
-                                main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +
-                                        ".cooldown").replace("%cooldown%", "" + remainingCooldown));
-                            }
+        main.getProxy().getScheduler().runAsync(main, () -> {
+            if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.back")) {
+                if (sender instanceof ProxiedPlayer) {
+                    ProxiedPlayer p = (ProxiedPlayer) sender;
+                    if (main.getTeleportHandler().getLastPositions().containsKey(p)) {
+                        int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
+                        boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
+                        if (remainingCooldown == 0 || ignoreCooldown) {
+                            main.getTeleportHandler().teleportToLocation(p, main.getTeleportHandler().getLastPositions().get
+                                                (p), ignoreCooldown, false);
                         } else {
-                            main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport.back" +
-                                    ".nolocation"));
+                            main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +
+                                    ".cooldown").replace("%cooldown%", "" + remainingCooldown));
                         }
                     } else {
-                        main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.noplayer"));
+                        main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport.back" +
+                                ".nolocation"));
                     }
                 } else {
-                    main.getPermissionHandler().sendMissingPermissionInfo(sender);
+                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.noplayer"));
                 }
+            } else {
+                main.getPermissionHandler().sendMissingPermissionInfo(sender);
             }
         });
     }
