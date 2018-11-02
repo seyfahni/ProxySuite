@@ -95,7 +95,7 @@ public class ProxySuiteBukkit extends JavaPlugin {
                 for (int z = bottomBlockZ; z <= topBlockZ; z++) {
                     for (int y = bottomBlockY; y <= topBlockY; y++) {
                         Block block = b1.getWorld().getBlockAt(x, y, z);
-                        b1.setType(material, false);
+                        block.setType(material, false);
                     }
                 }
             }

@@ -258,7 +258,7 @@ public class TeleportHandler {
     }
 
     public PendingTeleport getPendingTeleport(ProxiedPlayer p) {
-        List<PendingTeleport> test = (List<PendingTeleport>) pendingTeleports.clone();
+        List<PendingTeleport> test = new ArrayList<>(pendingTeleports);
         Collections.reverse(test);
         for (PendingTeleport teleport : test) {
             if ((teleport.getType() == PendingTeleport.TeleportType.TPA && teleport.getTo() == p) || (teleport.getType() == PendingTeleport.TeleportType.TPAHERE && teleport.getFrom() == p)) {

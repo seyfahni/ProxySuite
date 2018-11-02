@@ -226,7 +226,6 @@ public class HomeHandler {
                     }
                     String homeList;
                     if (sender instanceof ProxiedPlayer) {
-                        ProxiedPlayer p = (ProxiedPlayer) sender;
                         homeList = "[";
                         for (Home h : homes) {
                             String entry;

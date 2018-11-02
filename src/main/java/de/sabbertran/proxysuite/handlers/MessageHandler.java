@@ -12,6 +12,7 @@ import net.md_5.bungee.protocol.packet.Chat;
 import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 public class MessageHandler {
     private ProxySuite main;
@@ -26,8 +27,7 @@ public class MessageHandler {
     public void readMessagesFromFile() {
         messages = new HashMap<String, String>();
         File f = new File(main.getDataFolder(), "messages.yml");
-        try {
-            BufferedReader read = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF8"));
+        try (BufferedReader read = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF8"))) {
             String line;
             while ((line = read.readLine()) != null) {
                 line = line.trim();
@@ -40,10 +40,8 @@ public class MessageHandler {
                     messages.put(split[0], msg);
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            main.getLogger().log(Level.SEVERE, null, e);
         }
     }
 

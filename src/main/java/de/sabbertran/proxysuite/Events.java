@@ -14,7 +14,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -248,7 +247,6 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerDisconnect(PlayerDisconnectEvent ev) {
         final ProxiedPlayer p = ev.getPlayer();
-        final UUID uuid = p.getUniqueId();
         if (main.getConfig().getBoolean("ProxySuite.ModulesEnabled.Home"))
             main.getHomeHandler().removeHomesFromCache(p);
         main.getPlayerHandler().registerLogout(p);

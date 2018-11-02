@@ -76,8 +76,7 @@ public class PMessageListener implements Listener {
                             String player = in.readUTF();
                             ProxiedPlayer p = main.getPlayerHandler().getPlayer(player, null, false);
                             if (p != null) {
-                                main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage("portal" +
-                                        ".creation.failed"));
+                                main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage("portal.creation.failed").replace("%portal%", name));
                             }       break;
                         }
                     case "SetPortalSuccess":
@@ -100,8 +99,8 @@ public class PMessageListener implements Listener {
                             main.getPortalHandler().addPortalSuccess(portal);
                             ProxiedPlayer p = main.getPlayerHandler().getPlayer(player, null, false);
                             if (p != null) {
-                                main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage("portal.creation" +
-                                        ".success").replace("%name%", name).replace("%destination%", destination));
+                                main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage("portal.creation.success")
+                                        .replace("%name%", name).replace("%destination%", destination));
                             }       break;
                         }
                     case "GetPortals":

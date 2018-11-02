@@ -1,18 +1,17 @@
 package de.sabbertran.proxysuite.handlers;
 
 import de.sabbertran.proxysuite.ProxySuite;
-import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class AnnouncementHandler {
     private ProxySuite main;
     private ArrayList<String> announcements;
     private int currentAnnouncement;
-    private ScheduledTask task;
 
     public AnnouncementHandler(ProxySuite main) {
         this.main = main;
@@ -23,8 +22,7 @@ public class AnnouncementHandler {
     public void readAnnouncementsFromFile() {
         announcements = new ArrayList<String>();
         File f = new File(main.getDataFolder(), "announcements.yml");
-        try {
-            BufferedReader read = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF8"));
+        try (BufferedReader read = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF8"))) {
             String line;
             while ((line = read.readLine()) != null) {
                 line = line.trim();
@@ -33,17 +31,15 @@ public class AnnouncementHandler {
                 else if (!line.equals("") && !line.startsWith("#"))
                     announcements.add(line);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            main.getLogger().log(Level.SEVERE, null, e);
         }
         currentAnnouncement = 0;
     }
 
     public void startScheduler() {
         int interval = main.getConfig().getInt("ProxySuite.Announcements.Interval");
-        task = main.getProxy().getScheduler().schedule(main, new Runnable() {
+        main.getProxy().getScheduler().schedule(main, new Runnable() {
             public void run() {
                 broadcastMessage();
             }

@@ -7,10 +7,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.entity.Player;
 
 public class WorldGuardHandler {
-    private final ProxySuiteBukkit main;
 
-    public WorldGuardHandler(ProxySuiteBukkit main) {
-        this.main = main;
+    public WorldGuardHandler() {
     }
 
     public static boolean canExecuteCommand(Player p, String cmd) {

@@ -19,7 +19,8 @@ public class PortalHandler {
         portals = new ArrayList<>();
     }
 
-    public Portal setPortal(Player p, String name, String type) {
+    @SuppressWarnings("deprecation")
+	public Portal setPortal(Player p, String name, String type) {
         if (main.getWorldEdit() != null) {
             Selection sel = main.getWorldEdit().getSelection(p);
             if (sel != null) {
