@@ -1,0 +1,26 @@
+# Normalize as LF in the repository, OS native locally
+* text=auto
+
+.gitignore text
+.gitattributes text
+
+# Source files
+*.java text
+*.scala text
+*.groovy text
+*.py text
+*.php text
+*.ruby text
+*.js text
+*.html text
+*.css text
+
+# Configuration/text files
+*.txt text
+*.gradle text
+*.properties text
+*.yml text
+*.xml text
+*.json text
+
+*.odt binary
