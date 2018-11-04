@@ -159,7 +159,7 @@ public class ProxySuiteBukkit extends JavaPlugin {
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, null, e);
         }
-        player.sendPluginMessage(this, "ProxySuite", b.toByteArray());
+        player.sendPluginMessage(this, "proxysuite:channel", b.toByteArray());
     }
 
     public void teleportRequest(Player player, Location destination) {
