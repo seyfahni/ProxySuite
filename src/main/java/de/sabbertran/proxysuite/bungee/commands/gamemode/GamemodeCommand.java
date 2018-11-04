@@ -1,10 +1,20 @@
 package de.sabbertran.proxysuite.bungee.commands.gamemode;
 
+import java.util.Locale;
+
 import de.sabbertran.proxysuite.bungee.ProxySuite;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
+/**
+ * The /gamemode Command allows changing the gamemode of oneself or others on the whole network.
+ * There are three types of permissions: The basic usage permission, gamemode specific usage permissions
+ * and a permission to modify the gamemode of others.
+ * 
+ * The command is executed async.
+ *
+ */
 public class GamemodeCommand extends Command {
 
     private final ProxySuite main;
@@ -16,136 +26,132 @@ public class GamemodeCommand extends Command {
 
     @Override
     public void execute(final CommandSender sender, final String[] args) {
-        main.getProxy().getScheduler().runAsync(main, () -> {
-            if (sender instanceof ProxiedPlayer) {
-                ProxiedPlayer p = (ProxiedPlayer) sender;
-                if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode")) {
-                    switch (args.length) {
-                        case 1:
-                            if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("s") || args[0]
-                                    .equalsIgnoreCase("survival")) {
-                                if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode" +
-                                        ".survival")) {
-                                    main.getPlayerHandler().setGamemode(p, "SURVIVAL");
-                                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                            ("gamemode.survival"));
-                                } else {
-                                    main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                }
-                            } else if (args[0].equalsIgnoreCase("1") || args[0].equalsIgnoreCase("c") || args[0]
-                                    .equalsIgnoreCase("creative")) {
-                                if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode" +
-                                        ".creative")) {
-                                    main.getPlayerHandler().setGamemode(p, "CREATIVE");
-                                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                            ("gamemode.creative"));
-                                } else {
-                                    main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                }
-                            } else if (args[0].equalsIgnoreCase("2") || args[0].equalsIgnoreCase("a") || args[0]
-                                    .equalsIgnoreCase("adventure")) {
-                                if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode" +
-                                        ".adventure")) {
-                                    main.getPlayerHandler().setGamemode(p, "ADVENTURE");
-                                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                            ("gamemode.adventure"));
-                                } else {
-                                    main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                }
-                                
-                            } else if (args[0].equalsIgnoreCase("3") || args[0].equalsIgnoreCase("sp") || args[0]
-                                    .equalsIgnoreCase("spectator")) {
-                                if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode" +
-                                        ".spectator")) {
-                                    main.getPlayerHandler().setGamemode(p, "SPECTATOR");
-                                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                            ("gamemode.spectator"));
-                                } else {
-                                    main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                }
-                            } else {
-                                main.getCommandHandler().sendUsage(sender, this);
-                            }   break;
-                        case 2:
-                            if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode" +
-                                    ".others")) {
-                                ProxiedPlayer pl = main.getPlayerHandler().getPlayer(args[1], sender, true);
-                                if (pl != null) {
-                                    if (args[0].equalsIgnoreCase("0") || args[0].equalsIgnoreCase("s") || args[0]
-                                            .equalsIgnoreCase("survival")) {
-                                        if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands" +
-                                                ".gamemode" +
-                                                ".survival")) {
-                                            main.getPlayerHandler().setGamemode(pl, "SURVIVAL");
-                                            main.getMessageHandler().sendMessage(sender, main.getMessageHandler()
-                                                    .getMessage("gamemode.survival.other").replace("%player%", pl
-                                                            .getName()));
-                                            main.getMessageHandler().sendMessage(pl, main.getMessageHandler()
-                                                    .getMessage("gamemode.survival"));
-                                        } else {
-                                            main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                        }
-                                    } else if (args[0].equalsIgnoreCase("1") || args[0].equalsIgnoreCase("c") ||
-                                            args[0].equalsIgnoreCase("creative")) {
-                                        main.getPlayerHandler().setGamemode(pl, "CREATIVE");
-                                        if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands" +
-                                                ".gamemode.creative")) {
-                                            main.getMessageHandler().sendMessage(sender, main.getMessageHandler()
-                                                    .getMessage("gamemode.creative.other").replace("%player%", pl
-                                                            .getName()));
-                                            main.getMessageHandler().sendMessage(pl, main.getMessageHandler()
-                                                    .getMessage("gamemode.creative"));
-                                        } else {
-                                            main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                        }
-                                    } else if (args[0].equalsIgnoreCase("2") || args[0].equalsIgnoreCase("a") ||
-                                            args[0].equalsIgnoreCase("adventure")) {
-                                        if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands" +
-                                                ".gamemode.adventure")) {
-                                            main.getPlayerHandler().setGamemode(pl, "ADVENTURE");
-                                            main.getMessageHandler().sendMessage(sender, main.getMessageHandler()
-                                                    .getMessage("gamemode.adventure.other").replace("%player%", pl
-                                                            .getName()));
-                                            main.getMessageHandler().sendMessage(pl, main.getMessageHandler()
-                                                    .getMessage("gamemode.adventure"));
-                                        } else {
-                                            main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                        }
-                                    } else if (args[0].equalsIgnoreCase("3") || args[0].equalsIgnoreCase("sp") ||
-                                            args[0].equalsIgnoreCase("spectator")) {
-                                        if (main.getPermissionHandler().hasPermission(sender, "proxysuite.commands" +
-                                                ".gamemode.spectator")) {
-                                            main.getPlayerHandler().setGamemode(pl, "SPECTATOR");
-                                            main.getMessageHandler().sendMessage(sender, main.getMessageHandler()
-                                                    .getMessage("gamemode.spectator.other").replace("%player%", pl
-                                                            .getName()));
-                                            main.getMessageHandler().sendMessage(pl, main.getMessageHandler()
-                                                    .getMessage("gamemode.spectator"));
-                                        } else {
-                                            main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                                        }
-                                    } else {
-                                        main.getCommandHandler().sendUsage(sender, this);
-                                    }
-                                } else {
-                                    main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                            ("command.player.notonline").replace("%player%", args[1]));
-                                }
-                            } else {
-                                main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
-                                                        ("command.noplayer"));
-                            }   break;
-                        default:
-                            main.getCommandHandler().sendUsage(sender, this);
-                            break;
-                    }
-                } else {
-                    main.getPermissionHandler().sendMissingPermissionInfo(sender);
-                }
-            } else {
-                main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command" +
-                        ".noplayer"));
-            }
-        });
+        main.getProxy().getScheduler().runAsync(main, () -> executeGamemodeCommand(sender, args));
+    }
+    
+    private void executeGamemodeCommand(final CommandSender sender, final String[] args) {
+        if (hasPermissionBasic(sender)) {
+            executeGamemodeCommandWithPermission(sender, args);
+        } else {
+            sendErrorNoPermissions(sender);
+        }
+    }
+    
+    private void sendErrorNoPermissions(CommandSender sender) {
+        main.getPermissionHandler().sendMissingPermissionInfo(sender);
+    }
+    
+    private boolean hasPermissionBasic(CommandSender sender) {
+        return main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode");
+    }
+    
+    private void executeGamemodeCommandWithPermission(CommandSender sender, String[] args) {
+        if (args.length > 0 && args.length < 3) {
+            executeGamemodeCommandWithGamemodeArgument(sender, args);
+        } else {
+            sendErrorWrongUsage(sender);
+        }
+    }
+
+    private void sendErrorWrongUsage(CommandSender sender) {
+        main.getCommandHandler().sendUsage(sender, this);
+    }
+    
+    private void executeGamemodeCommandWithGamemodeArgument(CommandSender sender, String[] args) {
+        GameMode mode = parseTargetGameMode(args[0]);
+        if (mode != null) {
+            executeGamemodeCommandWithGamemode(sender, args, mode);
+        } else {
+            sendErrorWrongUsage(sender);
+        }
+    }
+    
+    private GameMode parseTargetGameMode(String gameModeArgument) {
+        switch (gameModeArgument.toLowerCase()) {
+            case "0":
+            case "s":
+            case "survival":
+                return GameMode.SURVIVAL;
+            case "1":
+            case "c":
+            case "creative":
+                return GameMode.CREATIVE;
+            case "2":
+            case "a":
+            case "adventure":
+                return GameMode.ADVENTURE;
+            case "3":
+            case "sp":
+            case "spectator":
+                return GameMode.SPECTATOR;
+            default:
+                return null;
+        }
+    }
+    
+    private void executeGamemodeCommandWithGamemode(CommandSender sender, String[] args, GameMode mode) {
+        if (hasPermissionForGamemode(sender, mode)) {
+            executeGamemodeCommandWithGamemodeAndPermission(sender, args, mode);
+        } else {
+            sendErrorNoPermissions(sender);
+        }
+    }
+    
+    private boolean hasPermissionForGamemode(CommandSender sender, GameMode mode) {
+        return main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode." + mode.toString().toLowerCase(Locale.ROOT));
+    }
+    
+    private void executeGamemodeCommandWithGamemodeAndPermission(CommandSender sender, String[] args, GameMode mode) {
+        if (args.length == 2) {
+            executeGamemodeCommandTargetToGamemode(sender, args[1], mode);
+        } else {
+            executeGamemodeCommandChangeOwn(sender, mode);
+        }
+    }
+    
+    private boolean isPlayer(CommandSender sender) {
+        return sender instanceof ProxiedPlayer;
+    }
+
+    private void sendErrorSenderNotPlayer(CommandSender sender) {
+        main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.noplayer"));
+    }
+    
+    private void executeGamemodeCommandTargetToGamemode(CommandSender sender, String target, GameMode mode) {
+        if (hasPermissionModifyOther(sender)) {
+            executeGamemodeCommandTargetToGamemodeWithPermission(sender, target, mode);
+        } else {
+            sendErrorNoPermissions(sender);
+        }
+    }
+    
+    private boolean hasPermissionModifyOther(CommandSender sender) {
+        return main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode.other");
+    }
+    
+    private void executeGamemodeCommandTargetToGamemodeWithPermission(CommandSender sender, String target, GameMode mode) {
+        ProxiedPlayer player = main.getPlayerHandler().getPlayer(target, sender, true);
+        if (player != null) {
+            setGamemode(sender, player, mode);
+        } else {
+            sendErrorInvalidTarget(sender, target);
+        }
+    }
+    
+    private void sendErrorInvalidTarget(CommandSender sender, String player) {
+        main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.player.notonline").replace("%player%", player));
+    }
+    
+    private void executeGamemodeCommandChangeOwn(CommandSender sender, GameMode mode) {
+        if (isPlayer(sender)) {
+            setGamemode(sender, (ProxiedPlayer) sender, mode);
+        } else {
+            sendErrorSenderNotPlayer(sender);
+        }
+    }
+    
+    private void setGamemode(final CommandSender sender, final ProxiedPlayer player, final GameMode targetGamemode) {
+        main.getPlayerHandler().setGamemode(player, targetGamemode.toString());
+        main.getMessageHandler().sendMessage(player, main.getMessageHandler().getMessage("gamemode." + targetGamemode.toString().toLowerCase(Locale.ROOT)));
     }
 }
