@@ -11,7 +11,7 @@ import net.md_5.bungee.api.plugin.Command;
  * The /gamemode Command allows changing the gamemode of oneself or others on the whole network.
  * There are three types of permissions: The basic usage permission, gamemode specific usage permissions
  * and a permission to modify the gamemode of others.
- * 
+ * <p>
  * The command is executed async.
  *
  */
@@ -28,7 +28,7 @@ public class GamemodeCommand extends Command {
     public void execute(final CommandSender sender, final String[] args) {
         main.getProxy().getScheduler().runAsync(main, () -> executeGamemodeCommand(sender, args));
     }
-    
+
     private void executeGamemodeCommand(final CommandSender sender, final String[] args) {
         if (hasPermissionBasic(sender)) {
             executeGamemodeCommandWithPermission(sender, args);
@@ -36,15 +36,15 @@ public class GamemodeCommand extends Command {
             sendErrorNoPermissions(sender);
         }
     }
-    
+
     private void sendErrorNoPermissions(CommandSender sender) {
         main.getPermissionHandler().sendMissingPermissionInfo(sender);
     }
-    
+
     private boolean hasPermissionBasic(CommandSender sender) {
         return main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode");
     }
-    
+
     private void executeGamemodeCommandWithPermission(CommandSender sender, String[] args) {
         if (args.length > 0 && args.length < 3) {
             executeGamemodeCommandWithGamemodeArgument(sender, args);
@@ -56,7 +56,7 @@ public class GamemodeCommand extends Command {
     private void sendErrorWrongUsage(CommandSender sender) {
         main.getCommandHandler().sendUsage(sender, this);
     }
-    
+
     private void executeGamemodeCommandWithGamemodeArgument(CommandSender sender, String[] args) {
         GameMode mode = parseTargetGameMode(args[0]);
         if (mode != null) {
@@ -65,7 +65,7 @@ public class GamemodeCommand extends Command {
             sendErrorWrongUsage(sender);
         }
     }
-    
+
     private GameMode parseTargetGameMode(String gameModeArgument) {
         switch (gameModeArgument.toLowerCase()) {
             case "0":
@@ -88,7 +88,7 @@ public class GamemodeCommand extends Command {
                 return null;
         }
     }
-    
+
     private void executeGamemodeCommandWithGamemode(CommandSender sender, String[] args, GameMode mode) {
         if (hasPermissionForGamemode(sender, mode)) {
             executeGamemodeCommandWithGamemodeAndPermission(sender, args, mode);
@@ -96,11 +96,11 @@ public class GamemodeCommand extends Command {
             sendErrorNoPermissions(sender);
         }
     }
-    
+
     private boolean hasPermissionForGamemode(CommandSender sender, GameMode mode) {
         return main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode." + mode.toString().toLowerCase(Locale.ROOT));
     }
-    
+
     private void executeGamemodeCommandWithGamemodeAndPermission(CommandSender sender, String[] args, GameMode mode) {
         if (args.length == 2) {
             executeGamemodeCommandTargetToGamemode(sender, args[1], mode);
@@ -108,15 +108,11 @@ public class GamemodeCommand extends Command {
             executeGamemodeCommandChangeOwn(sender, mode);
         }
     }
-    
+
     private boolean isPlayer(CommandSender sender) {
         return sender instanceof ProxiedPlayer;
     }
 
-    private void sendErrorSenderNotPlayer(CommandSender sender) {
-        main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.noplayer"));
-    }
-    
     private void executeGamemodeCommandTargetToGamemode(CommandSender sender, String target, GameMode mode) {
         if (hasPermissionModifyOther(sender)) {
             executeGamemodeCommandTargetToGamemodeWithPermission(sender, target, mode);
@@ -124,24 +120,28 @@ public class GamemodeCommand extends Command {
             sendErrorNoPermissions(sender);
         }
     }
-    
+
     private boolean hasPermissionModifyOther(CommandSender sender) {
         return main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.gamemode.other");
     }
-    
+
     private void executeGamemodeCommandTargetToGamemodeWithPermission(CommandSender sender, String target, GameMode mode) {
-        ProxiedPlayer player = main.getPlayerHandler().getPlayer(target, sender, true);
+        ProxiedPlayer player = parsePlayer(sender, target);
         if (player != null) {
             setGamemode(sender, player, mode);
         } else {
             sendErrorInvalidTarget(sender, target);
         }
     }
-    
+
+    private ProxiedPlayer parsePlayer(CommandSender sender, String target) {
+        return main.getPlayerHandler().getPlayer(target, sender, true);
+    }
+
     private void sendErrorInvalidTarget(CommandSender sender, String player) {
         main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.player.notonline").replace("%player%", player));
     }
-    
+
     private void executeGamemodeCommandChangeOwn(CommandSender sender, GameMode mode) {
         if (isPlayer(sender)) {
             setGamemode(sender, (ProxiedPlayer) sender, mode);
@@ -149,7 +149,11 @@ public class GamemodeCommand extends Command {
             sendErrorSenderNotPlayer(sender);
         }
     }
-    
+
+    private void sendErrorSenderNotPlayer(CommandSender sender) {
+        main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("command.noplayer"));
+    }
+
     private void setGamemode(final CommandSender sender, final ProxiedPlayer player, final GameMode targetGamemode) {
         main.getPlayerHandler().setGamemode(player, targetGamemode.toString());
         main.getMessageHandler().sendMessage(player, main.getMessageHandler().getMessage("gamemode." + targetGamemode.toString().toLowerCase(Locale.ROOT)));
