@@ -1,7 +1,7 @@
 package de.sabbertran.proxysuite.bungee.handlers;
 
 import de.sabbertran.proxysuite.bungee.ProxySuite;
-import de.sabbertran.proxysuite.bungee.utils.Location;
+import de.sabbertran.proxysuite.utils.Location;
 import de.sabbertran.proxysuite.bungee.utils.Warp;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -29,8 +29,7 @@ public class WarpHandler {
             ResultSet rs = main.getSQLConnection().createStatement().executeQuery("SELECT * FROM " + main
                     .getTablePrefix() + "warps");
             while (rs.next()) {
-                Warp w = new Warp(rs.getString("name"), new Location(main.getProxy()
-                        .getServerInfo(rs.getString("server")), rs.getString("world"),
+                Warp w = new Warp(rs.getString("name"), new Location(rs.getString("server"), rs.getString("world"),
                             rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"),
                             rs.getFloat("pitch"), rs.getFloat("yaw")),
                             rs.getBoolean("local"), rs.getBoolean("hidden"));
@@ -48,14 +47,14 @@ public class WarpHandler {
         if (old != null) {
             warps.remove(old);
             sql = "UPDATE " + main.getTablePrefix() + "warps SET `name` = '" + name + "', `hidden` = '" + (hidden ? 1
-                    : 0) + "', `server` = '" + loc.getServer().getName() + "', " + "`world` = '" + loc.getWorld() +
+                    : 0) + "', `server` = '" + loc.getServer() + "', " + "`world` = '" + loc.getWorld() +
                     "'," + " `x` = '" + loc.getX() + "', `y` = '" + loc.getY() + "', `z` = '" + loc.getZ() + "', " +
                     "`pitch` = '" + loc.getPitch() + "', `yaw` = '" + loc.getYaw() + "', `local` = '" + (local ? 1 : 0) +
                     "' WHERE LOWER(name) = '" + name
                     .toLowerCase() + "'";
         } else {
             sql = "INSERT INTO " + main.getTablePrefix() + "warps (name, hidden, server, world, x, y, z, pitch, yaw, local) " +
-                    "VALUES ('" + name + "', '" + (hidden ? 1 : 0) + "', '" + loc.getServer().getName() + "', '" +
+                    "VALUES ('" + name + "', '" + (hidden ? 1 : 0) + "', '" + loc.getServer() + "', '" +
                     loc.getWorld() + "', '" + loc.getX() + "', " + "'" + loc.getY() + "', '" + loc.getZ() + "', '" +
                     loc.getPitch() + "', '" + loc.getYaw() + "', '" + (local ? 1 : 0) + "')";
         }
@@ -93,7 +92,7 @@ public class WarpHandler {
             for (Warp w : this.warps) {
                 if (!w.isHidden() || includeHidden) {
                     if(w.isLocal() && (
-                            (server != null && !w.getLocation().getServer().getName().equals(server.getName())) ||
+                            (server != null && !w.getLocation().getServer().equals(server.getName())) ||
                             !main.getPermissionHandler().hasPermission(sender, "proxysuite.commands.warps.all")
                     )) {
                         continue;
@@ -113,11 +112,11 @@ public class WarpHandler {
                     }
                     entry = main.getMessageHandler().getMessage(entry)
                             .replace("%warp%", w.getName())
-                            .replace("%server%", w.getLocation().getServer().getName())
+                            .replace("%server%", w.getLocation().getServer())
                             .replace("%world%", w.getLocation().getWorld())
-                            .replace("%coordX%", "" + w.getLocation().getXInt())
-                            .replace("%coordY%", "" + w.getLocation().getYInt())
-                            .replace("%coordZ%", "" + w.getLocation().getZInt())
+                            .replace("%coordX%", "" + w.getLocation().getBlockX())
+                            .replace("%coordY%", "" + w.getLocation().getBlockY())
+                            .replace("%coordZ%", "" + w.getLocation().getBlockZ())
                             .replace("%local%", "" + w.isLocal());
                     if ((entry.startsWith("{") && entry.endsWith("}")) || (entry.startsWith("[") && entry
                             .endsWith("]")))

@@ -1,7 +1,7 @@
 package de.sabbertran.proxysuite.bungee.commands.home;
 
 import de.sabbertran.proxysuite.bungee.ProxySuite;
-import de.sabbertran.proxysuite.bungee.utils.Location;
+import de.sabbertran.proxysuite.utils.Location;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -56,7 +56,7 @@ public class SetHomeCommand extends Command {
                                 main.getPositionHandler().addPositionRunnable(p, () -> {
                                     Location loc = main.getPositionHandler().getLocalPositions().remove(p.getUniqueId());
                                     int maximumPerWorld = main.getHomeHandler().getMaximumHomesPerWorld(p.getName());
-                                    if (main.getHomeHandler().getHome(p.getName(), name1) != null || maximumPerWorld == -1 || main.getHomeHandler().getHomesInWorld(p, loc.getServer(), loc.getWorld()) < maximumPerWorld) {
+                                    if (main.getHomeHandler().getHome(p.getName(), name1) != null || maximumPerWorld == -1 || main.getHomeHandler().getHomesInWorld(p, main.getProxy().getServerInfo(loc.getServer()), loc.getWorld()) < maximumPerWorld) {
                                         main.getHomeHandler().setHome(p.getName(), name1, loc);
                                         main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("home.set.success").replace("%home%", name1));
                                     } else {

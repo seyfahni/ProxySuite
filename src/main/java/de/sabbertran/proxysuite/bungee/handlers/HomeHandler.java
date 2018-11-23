@@ -2,7 +2,7 @@ package de.sabbertran.proxysuite.bungee.handlers;
 
 import de.sabbertran.proxysuite.bungee.ProxySuite;
 import de.sabbertran.proxysuite.bungee.utils.Home;
-import de.sabbertran.proxysuite.bungee.utils.Location;
+import de.sabbertran.proxysuite.utils.Location;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -52,7 +52,7 @@ public class HomeHandler {
                         + " AND " + main.getTablePrefix() + "players.name = '" + player + "' AND " + main
                         .getTablePrefix() + "homes.name = '" + name + "'");
                 if (rs.next()) {
-                    Location loc = new Location(main.getProxy().getServerInfo(rs.getString("server")), rs.getString
+                    Location loc = new Location(rs.getString("server"), rs.getString
                             ("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("pitch"), rs.getFloat("yaw"));
                     Home h = new Home(p, name, loc);
                     return h;
@@ -75,7 +75,7 @@ public class HomeHandler {
             old.setName(name);
             old.setLocation(loc);
             sql = "UPDATE " + main.getTablePrefix() + "homes SET `name` = '" + name + "', `server` = '" + loc
-                    .getServer().getName() + "', " + "`world` = '" + loc.getWorld() + "'," + " `x` = '" + loc.getX()
+                    .getServer() + "', " + "`world` = '" + loc.getWorld() + "'," + " `x` = '" + loc.getX()
                     + "', `y` = '" + loc.getY() + "', `z` = '" + loc.getZ() + "', `pitch` = '" + loc.getPitch() + "'," +
                     " `yaw` = '" + loc.getYaw() + "' WHERE player = '" + p.getUniqueId() + "' AND LOWER(name) = '" +
                     name.toLowerCase() + "'";
@@ -90,7 +90,7 @@ public class HomeHandler {
                     .getName().toLowerCase() : player.toLowerCase()) + "')";
 
             sql = "INSERT INTO " + main.getTablePrefix() + "homes (player, name, server, world, x, y, z, pitch, yaw) " +
-                    "SELECT " + main.getTablePrefix() + "players.uuid, '" + name + "', '" + loc.getServer().getName()
+                    "SELECT " + main.getTablePrefix() + "players.uuid, '" + name + "', '" + loc.getServer()
                     + "', '" + loc.getWorld() + "', '" + loc.getX() + "', '" + loc.getY() + "', '" + loc.getZ() + "'," +
                     " '" + loc.getPitch() + "', '" + loc.getYaw() + "' FROM " + main.getTablePrefix() + "players " +
                     "WHERE LOWER(" + main.getTablePrefix() + "players.name) = '" + player.toLowerCase() + "'";
@@ -139,7 +139,7 @@ public class HomeHandler {
     public int getHomesInWorld(ProxiedPlayer p, ServerInfo server, String world) {
         int ret = 0;
         for (Home h : homes.get(p))
-            if (h.getLocation().getServer().equals(server) && h.getLocation().getWorld().equals(world))
+            if (h.getLocation().getServer().equals(server.getName()) && h.getLocation().getWorld().equals(world))
                 ret++;
         return ret;
     }
@@ -154,7 +154,7 @@ public class HomeHandler {
                             .getTablePrefix() + "homes WHERE player = '" + p.getUniqueId() + "'");
                     while (rs.next()) {
                         String name = rs.getString("name");
-                        Location loc = new Location(main.getProxy().getServerInfo(rs.getString("server")), rs
+                        Location loc = new Location(rs.getString("server"), rs
                                 .getString("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs
                                 .getFloat("pitch"), rs.getFloat("yaw"));
                         Home h = new Home(p, name, loc);
@@ -196,7 +196,7 @@ public class HomeHandler {
                         ResultSet rs = pst.executeQuery();
                         while (rs.next()) {
                             String name = rs.getString("name");
-                            Location loc = new Location(main.getProxy().getServerInfo(rs.getString("server")), rs.getString
+                            Location loc = new Location(rs.getString("server"), rs.getString
                                     ("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("pitch"), rs.getFloat("yaw"));
                             Home h = new Home(null, name, loc);
                             homes.add(h);
@@ -233,17 +233,17 @@ public class HomeHandler {
                                 if (sender.getName() == player)
                                     entry = main.getMessageHandler().getMessage("home.list.entry.withlocation")
                                             .replace("%home%", h.getName()).replace("%server%", h.getLocation()
-                                                    .getServer().getName()).replace("%world%", h.getLocation()
-                                                    .getWorld()).replace("%coordX%", "" + h.getLocation().getXInt())
-                                            .replace("%coordY%", "" + h.getLocation().getYInt()).replace("%coordZ%",
-                                                    "" + h.getLocation().getZInt());
+                                                    .getServer()).replace("%world%", h.getLocation()
+                                                    .getWorld()).replace("%coordX%", "" + h.getLocation().getBlockX())
+                                            .replace("%coordY%", "" + h.getLocation().getBlockY()).replace("%coordZ%",
+                                                    "" + h.getLocation().getBlockZ());
                                 else
                                     entry = main.getMessageHandler().getMessage("home.list.entry.withlocation.others")
                                             .replace("%home%", h.getName()).replace("%server%", h.getLocation()
-                                                    .getServer().getName()).replace("%world%", h.getLocation()
-                                                    .getWorld()).replace("%coordX%", "" + h.getLocation().getXInt())
-                                            .replace("%coordY%", "" + h.getLocation().getYInt()).replace("%coordZ%",
-                                                    "" + h.getLocation().getZInt()).replace("%player%", player);
+                                                    .getServer()).replace("%world%", h.getLocation()
+                                                    .getWorld()).replace("%coordX%", "" + h.getLocation().getBlockX())
+                                            .replace("%coordY%", "" + h.getLocation().getBlockY()).replace("%coordZ%",
+                                                    "" + h.getLocation().getBlockZ()).replace("%player%", player);
                             } else {
                                 if (sender.getName() == player)
                                     entry = main.getMessageHandler().getMessage("home.list.entry").replace("%home%",

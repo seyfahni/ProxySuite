@@ -1,7 +1,7 @@
 package de.sabbertran.proxysuite.bungee.handlers;
 
 import de.sabbertran.proxysuite.bungee.ProxySuite;
-import de.sabbertran.proxysuite.bungee.utils.Location;
+import de.sabbertran.proxysuite.utils.Location;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.io.ByteArrayOutputStream;

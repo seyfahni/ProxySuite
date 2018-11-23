@@ -1,5 +1,6 @@
 package de.sabbertran.proxysuite.bungee.utils;
 
+import de.sabbertran.proxysuite.utils.Location;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class Home {

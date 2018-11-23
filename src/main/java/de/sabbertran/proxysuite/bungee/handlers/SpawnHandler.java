@@ -1,7 +1,7 @@
 package de.sabbertran.proxysuite.bungee.handlers;
 
 import de.sabbertran.proxysuite.bungee.ProxySuite;
-import de.sabbertran.proxysuite.bungee.utils.Location;
+import de.sabbertran.proxysuite.utils.Location;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,12 +19,12 @@ public class SpawnHandler {
         String sql;
         if (firstSpawn != null) {
             sql = "UPDATE " + main.getTablePrefix() + "spawns SET server = '" + loc.getServer()
-                    .getName() + "', " + "world = '" + loc.getWorld() + "'," + " x = '" + loc.getX() + "', y = " +
+                    + "', " + "world = '" + loc.getWorld() + "'," + " x = '" + loc.getX() + "', y = " +
                     "'" + loc.getY() + "', z = '" + loc.getZ() + "', pitch = '" + loc.getPitch() + "', yaw = '"
                     + loc.getYaw() + "' WHERE type = 'FIRST'";
         } else {
             sql = "INSERT INTO " + main.getTablePrefix() + "spawns (type, server, world, x, y, z, pitch, yaw) VALUES " +
-                    "('FIRST', '" + loc.getServer().getName() + "', '" + loc.getWorld() + "', '" + loc.getX() + "', "
+                    "('FIRST', '" + loc.getServer() + "', '" + loc.getWorld() + "', '" + loc.getX() + "', "
                     + "'" + loc.getY() + "', '" + loc.getZ() + "', '" + loc.getPitch() + "', '" + loc.getYaw() + "')" +
                     "";
         }
@@ -47,12 +47,12 @@ public class SpawnHandler {
         String sql;
         if (normalSpawn != null) {
             sql = "UPDATE " + main.getTablePrefix() + "spawns SET server = '" + loc.getServer()
-                    .getName() + "', world = '" + loc.getWorld() + "'," + " x = '" + loc.getX() + "', y = " +
+                    + "', world = '" + loc.getWorld() + "'," + " x = '" + loc.getX() + "', y = " +
                     "'" + loc.getY() + "', z = '" + loc.getZ() + "', pitch = '" + loc.getPitch() + "', yaw = '"
                     + loc.getYaw() + "' WHERE type = 'NORMAL'";
         } else {
             sql = "INSERT INTO " + main.getTablePrefix() + "spawns (type, server, world, x, y, z, pitch, yaw) VALUES " +
-                    "('NORMAL', '" + loc.getServer().getName() + "', '" + loc.getWorld() + "', '" + loc.getX() + "', " +
+                    "('NORMAL', '" + loc.getServer() + "', '" + loc.getWorld() + "', '" + loc.getX() + "', " +
                     "" + "'" + loc.getY() + "', '" + loc.getZ() + "', '" + loc.getPitch() + "', '" + loc.getYaw() +
                     "')";
         }
@@ -78,7 +78,7 @@ public class SpawnHandler {
                     ResultSet rs = main.getSQLConnection().createStatement().executeQuery("SELECT * FROM " + main
                             .getTablePrefix() + "spawns");
                     while (rs.next()) {
-                        Location loc = new Location(main.getProxy().getServerInfo(rs.getString("server")), rs
+                        Location loc = new Location(rs.getString("server"), rs
                                 .getString("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("pitch"), rs.getFloat("yaw"));
                         if (rs.getString("type").equals("NORMAL"))
                             normalSpawn = loc;

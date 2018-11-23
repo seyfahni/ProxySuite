@@ -1,7 +1,7 @@
 package de.sabbertran.proxysuite.bungee.handlers;
 
 import de.sabbertran.proxysuite.bungee.ProxySuite;
-import de.sabbertran.proxysuite.bungee.utils.Location;
+import de.sabbertran.proxysuite.utils.Location;
 import de.sabbertran.proxysuite.bungee.utils.LoggedMessage;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -47,7 +47,7 @@ public class WarningHandler {
         final String sql = "INSERT INTO " + main.getTablePrefix() + "warnings (player, reason, author, server, world," +
                 " x, y, z, pitch, yaw, player_read, lastMessages) SELECT " + main.getTablePrefix() + "players.uuid, " +
                 "?, '" + (sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getUniqueId() : "CONSOLE") + "'," +
-                " '" + (loc.getServer() != null ? loc.getServer().getName() : "") + "', '" + loc.getWorld() + "', '"
+                " '" + (loc.getServer() != null ? loc.getServer() : "") + "', '" + loc.getWorld() + "', '"
                 + loc.getX() + "', '" + loc.getY() + "', '" + loc.getZ() + "', '" + loc.getPitch() + "', '" + loc
                 .getYaw() + "', '" + (p != null ? 1 : 0) + "', '" + lastMessages + "' FROM " + main.getTablePrefix()
                 + "players WHERE LOWER(" + main.getTablePrefix() + "players.name) = '" + player.toLowerCase() + "'";
@@ -129,7 +129,7 @@ public class WarningHandler {
                 ResultSet rs = main.getSQLConnection().createStatement().executeQuery("SELECT server, world, x, " +
                         "y, z, pitch, yaw FROM " + main.getTablePrefix() + "warnings WHERE id = '" + id + "'");
                 if (rs.next()) {
-                    Location loc = new Location(main.getProxy().getServerInfo(rs.getString("server")), rs.getString
+                    Location loc = new Location(rs.getString("server"), rs.getString
                             ("world"), rs.getDouble("x"), rs.getDouble("y"), rs.getDouble("z"), rs.getFloat("pitch"),
                             rs.getFloat("yaw"));
                     main.getTeleportHandler().teleportToLocation(p, loc, true, false, true);

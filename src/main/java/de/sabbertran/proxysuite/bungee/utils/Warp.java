@@ -1,5 +1,7 @@
 package de.sabbertran.proxysuite.bungee.utils;
 
+import de.sabbertran.proxysuite.utils.Location;
+
 public class Warp {
     private String name;
     private Location location;

@@ -1,7 +1,7 @@
 package de.sabbertran.proxysuite.bungee.commands.teleport;
 
 import de.sabbertran.proxysuite.bungee.ProxySuite;
-import de.sabbertran.proxysuite.bungee.utils.Location;
+import de.sabbertran.proxysuite.utils.Location;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -53,7 +53,7 @@ public class TPCommand extends Command {
                                 int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
                                 boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                                 if (remainingCooldown == 0 || ignoreCooldown) {
-                                    Location loc = new Location(p.getServer().getInfo(), "CURRENT", x, Double.MAX_VALUE, z);
+                                    Location loc = new Location(p.getServer().getInfo().getName(), "CURRENT", x, Double.MAX_VALUE, z);
                                     main.getTeleportHandler().teleportToLocation(p, loc, ignoreCooldown, false, true);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +
@@ -96,7 +96,7 @@ public class TPCommand extends Command {
                                 int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
                                 boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                                 if (remainingCooldown == 0 || ignoreCooldown) {
-                                    Location loc = new Location(p.getServer().getInfo(), "CURRENT", x, y, z);
+                                    Location loc = new Location(p.getServer().getInfo().getName(), "CURRENT", x, y, z);
                                     main.getTeleportHandler().teleportToLocation(p, loc, ignoreCooldown, false, true);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage("teleport" +

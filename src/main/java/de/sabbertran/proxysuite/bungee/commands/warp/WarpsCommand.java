@@ -30,13 +30,8 @@ public class WarpsCommand extends Command {
                 final ProxiedPlayer p = (ProxiedPlayer) sender;
                 main.getPositionHandler().requestPosition(p);
                 main.getPositionHandler().addPositionRunnable(p, () -> {
-                    ServerInfo server = main.getPositionHandler()
-                            .getLocalPositions().remove(p.getUniqueId()).getServer();
-                    main.getWarpHandler().sendWarpList(sender,
-                            (main.getCommandHandler().hasFlag(args, "true", 0) ||
-                                    main.getCommandHandler().hasFlag(args, "all", 0))
-                                    ? null : server,
-                            includeHidden);
+                    ServerInfo server = main.getProxy().getServerInfo(main.getPositionHandler().getLocalPositions().remove(p.getUniqueId()).getServer());
+                    main.getWarpHandler().sendWarpList(sender, (main.getCommandHandler().hasFlag(args, "true", 0) || main.getCommandHandler().hasFlag(args, "all", 0)) ? null : server, includeHidden);
                 });
             } else {
                 main.getWarpHandler().sendWarpList(sender, null, includeHidden);

@@ -1,5 +1,6 @@
 package de.sabbertran.proxysuite.bungee;
 
+import de.sabbertran.proxysuite.utils.Location;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -49,7 +50,7 @@ public class PMessageListener implements Listener {
                         {
                             ProxiedPlayer p = main.getProxy().getPlayer(in.readUTF());
                             if (p != null) {
-                                ServerInfo server = main.getProxy().getServerInfo(in.readUTF());
+                                String server = in.readUTF();
                                 String world = in.readUTF();
                                 double x = Double.parseDouble(in.readUTF());
                                 double y = Double.parseDouble(in.readUTF());
@@ -94,8 +95,8 @@ public class PMessageListener implements Listener {
                             int z2 = Integer.parseInt(in.readUTF());
                             String type = in.readUTF();
                             String destination = in.readUTF();
-                            Location loc1 = new Location(main.getProxy().getServerInfo(server), world, x1, y1, z1);
-                            Location loc2 = new Location(main.getProxy().getServerInfo(server), world, x2, y2, z2);
+                            Location loc1 = new Location(server, world, x1, y1, z1);
+                            Location loc2 = new Location(server, world, x2, y2, z2);
                             Portal portal = new Portal(name, type, loc1, loc2, destination);
                             main.getPortalHandler().addPortalSuccess(portal);
                             ProxiedPlayer p = main.getPlayerHandler().getPlayer(player, null, false);
@@ -141,7 +142,7 @@ public class PMessageListener implements Listener {
                                 double z = Double.parseDouble(in.readUTF());
                                 float pitch = Float.parseFloat(in.readUTF());
                                 float yaw = Float.parseFloat(in.readUTF());
-                                Location loc = new Location(s, world, x, y, z, pitch, yaw);
+                                Location loc = new Location(s.getName(), world, x, y, z, pitch, yaw);
                                 main.getTeleportHandler().savePlayerLocation(p, loc);
                             }       break;
                         }

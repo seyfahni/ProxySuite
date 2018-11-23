@@ -2,7 +2,7 @@ package de.sabbertran.proxysuite.bungee.handlers;
 
 import de.sabbertran.proxysuite.bungee.ProxySuite;
 import de.sabbertran.proxysuite.bungee.utils.Home;
-import de.sabbertran.proxysuite.bungee.utils.Location;
+import de.sabbertran.proxysuite.utils.Location;
 import de.sabbertran.proxysuite.bungee.utils.PendingTeleport;
 import de.sabbertran.proxysuite.bungee.utils.Warp;
 import net.md_5.bungee.api.CommandSender;
@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
+import net.md_5.bungee.api.config.ServerInfo;
 
 public class TeleportHandler {
     private final HashMap<ProxiedPlayer, Location> lastPositions;
@@ -91,10 +92,11 @@ public class TeleportHandler {
             } catch (IOException e) {
                 main.getLogger().log(Level.SEVERE, null, e);
             }
-            loc.getServer().sendData("proxysuite:channel", b.toByteArray());
+            ServerInfo server = main.getProxy().getServerInfo(loc.getServer());
+            server.sendData("proxysuite:channel", b.toByteArray());
 
-            if (p.getServer().getInfo() != loc.getServer())
-                p.connect(loc.getServer());
+            if (p.getServer().getInfo() != server)
+                p.connect(server);
 
             lastTeleports.put(p, new Date());
         }
@@ -122,10 +124,11 @@ public class TeleportHandler {
             } catch (IOException e) {
                 main.getLogger().log(Level.SEVERE, null, e);
             }
-            loc.getServer().sendData("proxysuite:channel", b.toByteArray());
+            ServerInfo server = main.getProxy().getServerInfo(loc.getServer());
+            server.sendData("proxysuite:channel", b.toByteArray());
 
-            if (p.getServer().getInfo() != loc.getServer())
-                p.connect(loc.getServer());
+            if (p.getServer().getInfo() != server)
+                p.connect(server);
 
             lastTeleports.put(p, new Date());
         }
@@ -158,10 +161,11 @@ public class TeleportHandler {
             } catch (IOException e) {
                 main.getLogger().log(Level.SEVERE, null, e);
             }
-            w.getLocation().getServer().sendData("proxysuite:channel", b.toByteArray());
+            ServerInfo server = main.getProxy().getServerInfo(w.getLocation().getServer());
+            server.sendData("proxysuite:channel", b.toByteArray());
 
-            if (p.getServer().getInfo() != w.getLocation().getServer())
-                p.connect(w.getLocation().getServer());
+            if (p.getServer().getInfo() != server)
+                p.connect(server);
 
             lastTeleports.put(p, new Date());
         }
@@ -186,10 +190,11 @@ public class TeleportHandler {
             } catch (IOException e) {
                 main.getLogger().log(Level.SEVERE, null, e);
             }
-            h.getLocation().getServer().sendData("proxysuite:channel", b.toByteArray());
+            ServerInfo server = main.getProxy().getServerInfo(h.getLocation().getServer());
+            server.sendData("proxysuite:channel", b.toByteArray());
 
-            if (p.getServer().getInfo() != h.getLocation().getServer())
-                p.connect(h.getLocation().getServer());
+            if (p.getServer().getInfo() != server)
+                p.connect(server);
 
             lastTeleports.put(p, new Date());
         }
