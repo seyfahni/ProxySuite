@@ -2,8 +2,6 @@ package de.sabbertran.proxysuite.api.transport;
 
 import de.sabbertran.proxysuite.utils.Location;
 import java.util.Objects;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
 
 /**
  * Teleport to a target player.
@@ -23,7 +21,7 @@ public class LocationTarget implements TeleportTarget {
     }
 
     @Override
-    public ServerInfo getTargetServer(ProxyServer proxy) {
+    public net.md_5.bungee.api.config.ServerInfo getTargetServer(net.md_5.bungee.api.ProxyServer proxy) {
         return proxy.getServerInfo(targetLocation.getServer());
     }
 
