@@ -37,7 +37,7 @@ public class TeleportHandler implements PluginMessageListener {
             if (!player.isOnline()) {
                 main.getPendingTeleportRequests().put(player, teleportRequest.getTarget());
             } else {
-                teleportRequest.getTarget().teleportPlayer(main.getServer(), player.getPlayer());
+                teleportRequest.getTarget().teleportToTarget(main.getServer(), player.getPlayer());
             }
         }
     }

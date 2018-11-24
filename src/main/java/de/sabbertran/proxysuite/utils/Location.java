@@ -28,13 +28,7 @@ public final class Location {
     }
 
     public Location(Location location) {
-        this.server = location.server;
-        this.world = location.world;
-        this.x = location.x;
-        this.y = location.y;
-        this.z = location.z;
-        this.pitch = location.pitch;
-        this.yaw = location.yaw;
+        this(location.server, location.world, location.x, location.y, location.z, location.pitch, location.yaw);
     }
 
     public String getServer() {
@@ -90,9 +84,15 @@ public final class Location {
         return yaw != Float.NaN && pitch != Float.NaN;
     }
 
+    /**
+     * Convert this location into a (Bukkit-){@link org.bukkit.Location}. Beware: The world may be set to null, if no
+     * valid world could be found.
+     *
+     * @param server the server to work on
+     * @return the Bukkit-Location
+     */
     public org.bukkit.Location toBukkitLocation(org.bukkit.Server server) {
         org.bukkit.World bukkitWorld = server.getWorld(getWorld());
-        if (bukkitWorld == null) bukkitWorld = server.getWorlds().get(0);
         org.bukkit.Location bukkitLocation;
         if (hasPosition()) {
             bukkitLocation = new org.bukkit.Location(bukkitWorld, getX(), getY(), getZ());

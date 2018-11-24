@@ -51,7 +51,7 @@ public class WarpCommand extends Command {
                     int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
                     boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                     if (remainingCooldown == 0 || ignoreCooldown) {
-                        main.getTeleportHandler().teleportToWarp(p, w, ignoreCooldown);
+                        main.getTeleportHandler().teleportToLocation(p, w.getLocation(), ignoreCooldown, false, false);
                     } else {
                         main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
                                                     ("teleport.cooldown" + ((sender.getName().equals(p.getName())) ? "" : ".other"))

@@ -28,7 +28,7 @@ public class HomeCommand extends Command {
                                 int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
                                 boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                                 if (remainingCooldown == 0 || ignoreCooldown) {
-                                    main.getTeleportHandler().teleportToHome(p, h, ignoreCooldown);
+                                    main.getTeleportHandler().teleportToLocation(p, h.getLocation(), ignoreCooldown, false, false);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
                                                             ("teleport.cooldown").replace("%cooldown%", "" + remainingCooldown));
@@ -47,7 +47,7 @@ public class HomeCommand extends Command {
                                 int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
                                 boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                                 if (remainingCooldown == 0 || ignoreCooldown) {
-                                    main.getTeleportHandler().teleportToHome(p, h, ignoreCooldown);
+                                    main.getTeleportHandler().teleportToLocation(p, h.getLocation(), ignoreCooldown, false, false);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
                                                             ("teleport.cooldown").replace("%cooldown%", "" + remainingCooldown));
@@ -69,7 +69,7 @@ public class HomeCommand extends Command {
                                     int remainingCooldown = main.getTeleportHandler().getRemainingCooldown(p);
                                     boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
                                     if (remainingCooldown == 0 || ignoreCooldown) {
-                                        main.getTeleportHandler().teleportToHome(p, h, ignoreCooldown);
+                                        main.getTeleportHandler().teleportToLocation(p, h.getLocation(), ignoreCooldown, false, false);
                                     } else {
                                         main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
                                                                             ("teleport.cooldown").replace("%cooldown%", "" + remainingCooldown));

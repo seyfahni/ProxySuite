@@ -8,24 +8,34 @@ import java.util.UUID;
  */
 public class PlayerTarget implements TeleportTarget {
     
-    private final UUID uuid;
+    private final UUID targetPlayer;
 
-    public PlayerTarget(UUID uuid) {
-        this.uuid = uuid;
+    public PlayerTarget(UUID targetPlayer) {
+        this.targetPlayer = Objects.requireNonNull(targetPlayer);
     }
 
     @Override
-    public void teleportPlayer(org.bukkit.Server server, org.bukkit.entity.Player toTeleport) {
-        org.bukkit.OfflinePlayer player = server.getOfflinePlayer(uuid);
+    public void teleportToTarget(org.bukkit.Server server, org.bukkit.entity.Player toTeleport) {
+        org.bukkit.OfflinePlayer player = server.getOfflinePlayer(targetPlayer);
         if (player.isOnline()) {
             toTeleport.teleport(player.getPlayer(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND);
         }
     }
 
     @Override
+    public net.md_5.bungee.api.config.ServerInfo getTargetServer(net.md_5.bungee.api.ProxyServer proxy) {
+        net.md_5.bungee.api.connection.ProxiedPlayer player = proxy.getPlayer(targetPlayer);
+        if (player != null) {
+            return player.getServer().getInfo();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public int hashCode() {
         int hash = 5;
-        hash = 59 * hash + Objects.hashCode(this.uuid);
+        hash = 59 * hash + Objects.hashCode(this.targetPlayer);
         return hash;
     }
 
@@ -41,7 +51,7 @@ public class PlayerTarget implements TeleportTarget {
             return false;
         }
         final PlayerTarget other = (PlayerTarget) obj;
-        if (!Objects.equals(this.uuid, other.uuid)) {
+        if (!Objects.equals(this.targetPlayer, other.targetPlayer)) {
             return false;
         }
         return true;

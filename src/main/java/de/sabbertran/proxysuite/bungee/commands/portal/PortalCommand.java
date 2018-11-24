@@ -27,7 +27,7 @@ public class PortalCommand extends Command {
                         if (portal != null) {
                             Warp destination = main.getWarpHandler().getWarp(portal.getDestination(), true);
                             if (destination != null)
-                                main.getTeleportHandler().teleportToWarp(p, destination, true);
+                                main.getTeleportHandler().teleportToLocation(p, destination.getLocation(), false, false, false);
                             else
                                 main.getMessageHandler().sendMessage(p, main.getMessageHandler().getMessage("portal" +
                                         ".destination.notexists").replace("%destination%", portal.getDestination()));

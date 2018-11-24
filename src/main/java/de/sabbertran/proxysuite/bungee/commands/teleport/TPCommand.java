@@ -28,7 +28,7 @@ public class TPCommand extends Command {
                             if (remainingCooldown == 0 || ignoreCooldown) {
                                 ProxiedPlayer to = main.getPlayerHandler().getPlayer(args[0], sender, true);
                                 if (to != null) {
-                                    main.getTeleportHandler().teleportToPlayer(p, to, ignoreCooldown, true);
+                                    main.getTeleportHandler().teleportToPlayer(p, to, ignoreCooldown, false, true);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
                                                 ("command.player.notonline").replace("%player%", args[0]));
@@ -72,7 +72,7 @@ public class TPCommand extends Command {
                             if (p1 != null) {
                                 if (p2 != null) {
                                     boolean ignoreCooldown = main.getTeleportHandler().canIgnoreCooldown(sender);
-                                    main.getTeleportHandler().teleportToPlayer(p1, p2, ignoreCooldown, true);
+                                    main.getTeleportHandler().teleportToPlayer(p1, p2, ignoreCooldown, false, true);
                                 } else {
                                     main.getMessageHandler().sendMessage(sender, main.getMessageHandler().getMessage
                                                 ("command.player.notonline").replace("%player%", args[1]));

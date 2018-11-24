@@ -69,7 +69,7 @@ public class PMessageListener implements Listener {
                             if (p != null && portal != null) {
                                 Warp destination = main.getWarpHandler().getWarp(portal.getDestination(), true);
                                 if (destination != null)
-                                    main.getTeleportHandler().teleportToWarp(p, destination, true);
+                                    main.getTeleportHandler().teleportToLocation(p, destination.getLocation(), true, true, true);
                             }
                         }   break;
                     case "SetPortalFailed":

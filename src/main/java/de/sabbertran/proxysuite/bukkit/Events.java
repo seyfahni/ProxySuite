@@ -62,7 +62,7 @@ public class Events implements Listener {
 
         TeleportTarget target = main.getPendingTeleportRequests().remove(p);
         if (target != null) {
-            main.getServer().getScheduler().scheduleSyncDelayedTask(main, () -> target.teleportPlayer(main.getServer(), p), 1);
+            main.getServer().getScheduler().scheduleSyncDelayedTask(main, () -> target.teleportToTarget(main.getServer(), p), 1);
         }
 
         if (main.isRequestPortals()) {

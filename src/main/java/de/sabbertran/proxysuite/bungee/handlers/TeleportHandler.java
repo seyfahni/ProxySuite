@@ -1,21 +1,25 @@
 package de.sabbertran.proxysuite.bungee.handlers;
 
+import de.sabbertran.proxysuite.api.transport.*;
 import de.sabbertran.proxysuite.bungee.ProxySuite;
-import de.sabbertran.proxysuite.bungee.utils.Home;
-import de.sabbertran.proxysuite.utils.Location;
 import de.sabbertran.proxysuite.bungee.utils.PendingTeleport;
-import de.sabbertran.proxysuite.bungee.utils.Warp;
+import de.sabbertran.proxysuite.utils.Location;
+import de.sabbertran.proxysuite.utils.Regestry;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.logging.Level;
 import net.md_5.bungee.api.config.ServerInfo;
 
 public class TeleportHandler {
+
     private final HashMap<ProxiedPlayer, Location> lastPositions;
     private final ProxySuite main;
     private final ArrayList<PendingTeleport> pendingTeleports;
@@ -29,174 +33,49 @@ public class TeleportHandler {
         lastPositions = new HashMap<>();
     }
 
-    public void teleportToPlayer(ProxiedPlayer p, ProxiedPlayer to, boolean ignoreCooldown, boolean force) {
-        int warmup = force ? 0 : getWarmup(p.getName());
+    public void teleportToLocation(ProxiedPlayer player, Location location, boolean ignoreCooldown, boolean ignoreBackSave, boolean ignoreWarmup) {
+        teleportToTarget(player, new LocationTarget(location), ignoreCooldown, ignoreBackSave, ignoreWarmup);
+    }
 
-        if (ignoreCooldown || getRemainingCooldown(p) == 0) {
-            savePlayerLocation(p);
+    public void teleportToPlayer(ProxiedPlayer player, ProxiedPlayer to, boolean ignoreCooldown, boolean ignoreBackSave, boolean ignoreWarmup) {
+        teleportToTarget(player, new PlayerTarget(to.getUniqueId()), ignoreCooldown, ignoreBackSave, ignoreWarmup);
+    }
 
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-            try {
-                out.writeUTF("Teleport");
-                out.writeUTF(p.getName());
-                out.writeUTF("PLAYER" + (warmup > 0 ? "_WARMUP" : ""));
-                out.writeUTF(to.getName());
-                if(warmup > 0) {
-                    out.writeUTF("" + 20*warmup);
-                    main.getMessageHandler().sendMessage(p, main.getMessageHandler()
-                            .getMessage("teleport.warmup")
-                            .replace("%warmup%", "" + warmup));
-                }
-            } catch (IOException e) {
-                main.getLogger().log(Level.SEVERE, null, e);
+    public void teleportToTarget(ProxiedPlayer player, TeleportTarget target, boolean ignoreCooldown, boolean ignoreBackSave, boolean ignoreWarmup) {
+        if (ignoreCooldown || getRemainingCooldown(player) == 0) {
+            if (!ignoreBackSave) {
+                savePlayerLocation(player);
             }
-            to.getServer().sendData("proxysuite:channel", b.toByteArray());
 
-            if (p.getServer().getInfo() != to.getServer().getInfo())
-                p.connect(to.getServer().getInfo());
+            TeleportRequest request;
+            if (ignoreWarmup) {
+                request = new TeleportRequest(player.getUniqueId(), target);
+            } else {
+                Instant warmup = Instant.now().plus(getWarmupDuration(player.getName()));
+                request = new TeleportRequest(player.getUniqueId(), target, warmup);
+            }
+            sendPlayerAndRequestToTargetServer(request, player);
 
-            lastTeleports.put(p, new Date());
+            lastTeleports.put(player, new Date());
         }
     }
 
-        public void teleportToLocation(ProxiedPlayer p, Location loc, boolean ignoreCooldown, boolean ignoreBackSave, boolean force) {
-        if (ignoreCooldown || getRemainingCooldown(p) == 0) {
-            if (!ignoreBackSave)
-                savePlayerLocation(p);
-
-            int warmup = force ? 0 : getWarmup(p.getName());
-
-            String sY = "" + loc.getY();
-            if (loc.getY() == Double.MAX_VALUE)
-                sY = "HIGHEST";
-
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-            try {
-                out.writeUTF("Teleport");
-                out.writeUTF(p.getName());
-                out.writeUTF("LOCATION" + (warmup > 0 ? "_WARMUP" : ""));
-                out.writeUTF(loc.getWorld());
-                out.writeUTF("" + loc.getX());
-                out.writeUTF(sY);
-                out.writeUTF("" + loc.getZ());
-                out.writeUTF("" + loc.getPitch());
-                out.writeUTF("" + loc.getYaw());
-                if(warmup > 0) {
-                    out.writeUTF("" + 20*warmup);
-                    main.getMessageHandler().sendMessage(p, main.getMessageHandler()
-                            .getMessage("teleport.warmup")
-                            .replace("%warmup%", "" + warmup));
-                }
-            } catch (IOException e) {
-                main.getLogger().log(Level.SEVERE, null, e);
-            }
-            ServerInfo server = main.getProxy().getServerInfo(loc.getServer());
-            server.sendData("proxysuite:channel", b.toByteArray());
-
-            if (p.getServer().getInfo() != server)
-                p.connect(server);
-
-            lastTeleports.put(p, new Date());
+    private void sendPlayerAndRequestToTargetServer(TeleportRequest teleportRequest, ProxiedPlayer player) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            DataOutputStream out = new DataOutputStream(baos);
+            String json = Regestry.gson().toJson(teleportRequest);
+            out.writeUTF(json);
+        } catch (IOException e) {
+            main.getLogger().log(Level.SEVERE, null, e);
         }
-    }
-
-    public void teleportToSpawn(ProxiedPlayer p, Location loc, boolean ignoreCooldown) {
-        if (ignoreCooldown || getRemainingCooldown(p) == 0) {
-            int warmup = getWarmup(p.getName());
-
-            savePlayerLocation(p);
-
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-            try {
-                out.writeUTF("Teleport");
-                out.writeUTF(p.getName());
-                out.writeUTF("SPAWN" + ((warmup > 0) ? "_WARMUP" : ""));
-                out.writeUTF(loc.getWorld());
-                if(warmup > 0) {
-                    out.writeUTF("" + 20*warmup);
-                    main.getMessageHandler().sendMessage(p, main.getMessageHandler()
-                            .getMessage("teleport.warmup")
-                            .replace("%warmup%", "" + warmup));
-                }
-            } catch (IOException e) {
-                main.getLogger().log(Level.SEVERE, null, e);
-            }
-            ServerInfo server = main.getProxy().getServerInfo(loc.getServer());
-            server.sendData("proxysuite:channel", b.toByteArray());
-
-            if (p.getServer().getInfo() != server)
-                p.connect(server);
-
-            lastTeleports.put(p, new Date());
-        }
-    }
-
-    public void teleportToWarp(ProxiedPlayer p, Warp w, boolean ignoreCooldown) {
-        if (ignoreCooldown || getRemainingCooldown(p) == 0) {
-            savePlayerLocation(p);
-
-            int warmup = getWarmup(p.getName());
-
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-            try {
-                out.writeUTF("Teleport");
-                out.writeUTF(p.getName());
-                out.writeUTF("LOCATION" + ((warmup > 0) ? "_WARMUP" : ""));
-                out.writeUTF(w.getLocation().getWorld());
-                out.writeUTF("" + w.getLocation().getX());
-                out.writeUTF("" + w.getLocation().getY());
-                out.writeUTF("" + w.getLocation().getZ());
-                out.writeUTF("" + w.getLocation().getPitch());
-                out.writeUTF("" + w.getLocation().getYaw());
-                if(warmup > 0) {
-                    out.writeUTF("" + 20*warmup);
-                    main.getMessageHandler().sendMessage(p, main.getMessageHandler()
-                            .getMessage("teleport.warmup")
-                            .replace("%warmup%", "" + warmup));
-                }
-            } catch (IOException e) {
-                main.getLogger().log(Level.SEVERE, null, e);
-            }
-            ServerInfo server = main.getProxy().getServerInfo(w.getLocation().getServer());
-            server.sendData("proxysuite:channel", b.toByteArray());
-
-            if (p.getServer().getInfo() != server)
-                p.connect(server);
-
-            lastTeleports.put(p, new Date());
-        }
-    }
-
-    public void teleportToHome(ProxiedPlayer p, Home h, boolean ignoreCooldown) {
-        if (ignoreCooldown || getRemainingCooldown(p) == 0) {
-            savePlayerLocation(p);
-
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-            try {
-                out.writeUTF("Teleport");
-                out.writeUTF(p.getName());
-                out.writeUTF("LOCATION");
-                out.writeUTF(h.getLocation().getWorld());
-                out.writeUTF("" + h.getLocation().getX());
-                out.writeUTF("" + h.getLocation().getY());
-                out.writeUTF("" + h.getLocation().getZ());
-                out.writeUTF("" + h.getLocation().getPitch());
-                out.writeUTF("" + h.getLocation().getYaw());
-            } catch (IOException e) {
-                main.getLogger().log(Level.SEVERE, null, e);
-            }
-            ServerInfo server = main.getProxy().getServerInfo(h.getLocation().getServer());
-            server.sendData("proxysuite:channel", b.toByteArray());
-
-            if (p.getServer().getInfo() != server)
-                p.connect(server);
-
-            lastTeleports.put(p, new Date());
+        TeleportTarget target = teleportRequest.getTarget();
+        ServerInfo targetServer = target.getTargetServer(main.getProxy());
+        if (targetServer != null) {
+            targetServer.sendData("proxysuite:teleport", baos.toByteArray());
+            target.connectToServer(main.getProxy(), player);
+        } else {
+            main.getLogger().log(Level.SEVERE, "teleport request failed: {0}", teleportRequest);
         }
     }
 
@@ -231,16 +110,18 @@ public class TeleportHandler {
     private int getCooldown(String player) {
         int lowest = main.getConfig().getInt("ProxySuite.Teleport.DefaultCooldown");
         if (main.getPermissionHandler().getPermissions().containsKey(player)) {
-            for (String s : main.getPermissionHandler().getPermissions().get(player))
+            for (String s : main.getPermissionHandler().getPermissions().get(player)) {
                 if (s.startsWith("proxysuite.teleport.cooldown.")) {
                     String amount = s.replace("proxysuite.teleport.cooldown.", "");
                     try {
                         int temp = Integer.parseInt(amount);
-                        if (temp < lowest)
+                        if (temp < lowest) {
                             lowest = temp;
+                        }
                     } catch (NumberFormatException ex) {
                     }
                 }
+            }
         }
         return lowest;
     }
@@ -248,18 +129,24 @@ public class TeleportHandler {
     private int getWarmup(String player) {
         int lowest = main.getConfig().getInt("ProxySuite.Teleport.DefaultWarmup");
         if (main.getPermissionHandler().getPermissions().containsKey(player)) {
-            for (String s : main.getPermissionHandler().getPermissions().get(player))
+            for (String s : main.getPermissionHandler().getPermissions().get(player)) {
                 if (s.startsWith("proxysuite.teleport.warmup.")) {
                     String amount = s.replace("proxysuite.teleport.warmup.", "");
                     try {
                         int temp = Integer.parseInt(amount);
-                        if (temp < lowest)
+                        if (temp < lowest) {
                             lowest = temp;
+                        }
                     } catch (NumberFormatException ex) {
                     }
                 }
+            }
         }
         return lowest;
+    }
+
+    private Duration getWarmupDuration(String player) {
+        return Duration.of(getWarmup(player), ChronoUnit.SECONDS);
     }
 
     public PendingTeleport getPendingTeleport(ProxiedPlayer p) {

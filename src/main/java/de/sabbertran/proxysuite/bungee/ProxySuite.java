@@ -116,6 +116,7 @@ public class ProxySuite extends Plugin {
 
         getProxy().getPluginManager().registerListener(this, new Events(this));
         getProxy().registerChannel("proxysuite:channel");
+        getProxy().registerChannel("proxysuite:teleport");
         getProxy().getPluginManager().registerListener(this, new PMessageListener(this));
 
         getProxy().getServers().values().forEach(s -> portalHandler.sendPortalsToServer(s));

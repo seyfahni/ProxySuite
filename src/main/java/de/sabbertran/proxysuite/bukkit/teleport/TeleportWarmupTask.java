@@ -25,7 +25,7 @@ public class TeleportWarmupTask implements Runnable {
         if (!player.isOnline()) {
             main.getPendingTeleportRequests().put(player, target);
         } else {
-            target.teleportPlayer(main.getServer(), player.getPlayer());
+            target.teleportToTarget(main.getServer(), player.getPlayer());
         }
     }
     

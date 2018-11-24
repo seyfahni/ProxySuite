@@ -50,7 +50,7 @@ public class TPAcceptCommand extends Command {
                                                                             .getPlayerHandler().getSuffix(teleport.getFrom())));
                             }
                             
-                            main.getTeleportHandler().teleportToPlayer(teleport.getFrom(), teleport.getTo(), ignoreCooldown, false);
+                            main.getTeleportHandler().teleportToPlayer(teleport.getFrom(), teleport.getTo(), ignoreCooldown, false, false);
                             teleport.cancelCancel();
                             main.getTeleportHandler().getPendingTeleports().remove(teleport);
                         } else {
