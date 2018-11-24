@@ -28,66 +28,7 @@ public class PMessageListener implements PluginMessageListener {
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subchannel = in.readUTF();
         if (subchannel.equals("Teleport")) {
-            String player = in.readUTF();
-            final Player p = main.getServer().getPlayer(player);
-            String type = in.readUTF();
-            boolean warmup = type.endsWith("_WARMUP");
-            if (type.startsWith("LOCATION")) {
-                String world = in.readUTF();
-                double x = Double.parseDouble(in.readUTF());
-                String y = in.readUTF();
-                double z = Double.parseDouble(in.readUTF());
-                float pitch = Float.parseFloat(in.readUTF());
-                float yaw = Float.parseFloat(in.readUTF());
-                World w;
-                if (world.equals("CURRENT")) {
-                    w = p.getWorld();
-                } else {
-                    w = main.getServer().getWorld(world);
-                }
-                if (w != null) {
-                    final Location destination;
-                    if (y.equals("HIGHEST")) {
-                        destination = w.getHighestBlockAt(new Location(w, x, 64, z, yaw, pitch)).getLocation();
-                    } else {
-                        destination = new Location(w, x, Double.parseDouble(y), z, yaw, pitch);
-                    }
-                    if (p == null || !p.isOnline()) {
-                        main.getPendingLocationTeleports().put(player, destination);
-                        return;
-                    }
-
-                    if(warmup) {
-                        int warmupTime = Integer.parseInt(in.readUTF());
-                        main.getPendingWarmupTeleports().put(p.getName(),
-                                new TeleportWarmup(destination, p, main).runTaskLater(main, warmupTime));
-                    } else {
-                        main.teleportRequest(p, destination);
-                    }
-                }
-            } else if (type.startsWith("PLAYER")) {
-                String to = in.readUTF();
-                Player p_to = main.getServer().getPlayer(to);
-                if(warmup) {
-                    int warmupTime = Integer.parseInt(in.readUTF());
-                    main.getPendingWarmupTeleports().put(p.getName(),
-                            new TeleportWarmup(p_to.getLocation(), p, main).runTaskLater(main, warmupTime));
-                } else {
-                    main.teleportRequest(p, p_to.getLocation());
-                }
-            } else if (type.startsWith("SPAWN")) {
-                String world = in.readUTF();
-                World w = main.getServer().getWorld(world);
-                if (w != null) {
-                    if(warmup) {
-                        int warmupTime = Integer.parseInt(in.readUTF());
-                        main.getPendingWarmupTeleports().put(p.getName(),
-                                new TeleportWarmup(w.getSpawnLocation(), p, main).runTaskLater(main, warmupTime));
-                    } else {
-                        main.teleportRequest(p, w.getSpawnLocation());
-                    }
-                }
-            }
+            main.getLogger().severe("Teleport Subchannel is no longer supported!");
         } else if (subchannel.equals("GetPosition")) {
             String player = in.readUTF();
             String server = in.readUTF();

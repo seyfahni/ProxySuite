@@ -1,5 +1,6 @@
 package de.sabbertran.proxysuite.bukkit;
 
+import de.sabbertran.proxysuite.api.transport.TeleportTarget;
 import de.sabbertran.proxysuite.bukkit.portals.Portal;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -59,18 +60,9 @@ public class Events implements Listener {
             }
         }
 
-        if (main.getPendingLocationTeleports().containsKey(p.getName())) {
-            p.teleport(main.getPendingLocationTeleports().get(p.getName()));
-            main.getPendingLocationTeleports().remove(p.getName());
-        } else if (main.getPendingPlayerTeleports().containsKey(p.getName())) {
-            Player to = main.getServer().getPlayer(main.getPendingPlayerTeleports().get(p.getName()));
-            if (to != null && to.isOnline()) {
-                p.teleport(to);
-            }
-            main.getPendingPlayerTeleports().remove(p.getName());
-        } else if (main.getPendingSpawnTeleports().containsKey(p.getName())) {
-            p.teleport(main.getPendingSpawnTeleports().get(p.getName()).getSpawnLocation());
-            main.getPendingSpawnTeleports().remove(p.getName());
+        TeleportTarget target = main.getPendingTeleportRequests().remove(p);
+        if (target != null) {
+            main.getServer().getScheduler().scheduleSyncDelayedTask(main, () -> target.teleportPlayer(main.getServer(), p), 1);
         }
 
         if (main.isRequestPortals()) {

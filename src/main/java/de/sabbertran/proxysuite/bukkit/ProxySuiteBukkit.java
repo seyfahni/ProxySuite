@@ -1,8 +1,17 @@
 package de.sabbertran.proxysuite.bukkit;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapterFactory;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import de.sabbertran.proxysuite.api.transport.LocationTarget;
+import de.sabbertran.proxysuite.api.transport.PlayerTarget;
+import de.sabbertran.proxysuite.api.transport.TeleportTarget;
 import de.sabbertran.proxysuite.bukkit.commands.BunCommand;
 import de.sabbertran.proxysuite.bukkit.portals.PortalHandler;
+import de.sabbertran.proxysuite.bukkit.teleport.TeleportHandler;
+import de.sabbertran.proxysuite.libraries.com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
+import de.sabbertran.proxysuite.utils.Regestry;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,9 +29,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.logging.Level;
+import org.bukkit.OfflinePlayer;
 
 public class ProxySuiteBukkit extends JavaPlugin {
 
+    private HashMap<OfflinePlayer, TeleportTarget> pendingTeleportRequests;
     private HashMap<String, BukkitTask> pendingWarmupTeleports;
     private HashMap<String, Location> pendingLocationTeleports;
     private HashMap<String, String> pendingPlayerTeleports;
@@ -33,6 +44,17 @@ public class ProxySuiteBukkit extends JavaPlugin {
     private WorldEditPlugin worldEdit;
     private boolean worldguardLoaded;
     private Chat chat;
+
+    @Override
+    public void onLoad() {
+        TypeAdapterFactory teleportTargetTypeAdapterFactory = RuntimeTypeAdapterFactory.of(TeleportTarget.class)
+                .registerSubtype(PlayerTarget.class)
+                .registerSubtype(LocationTarget.class);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(teleportTargetTypeAdapterFactory)
+                .create();
+        Regestry.getInstance().registerGson(gson);
+    }
 
     @Override
     public void onEnable() {
@@ -50,6 +72,7 @@ public class ProxySuiteBukkit extends JavaPlugin {
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "proxysuite:channel");
         getServer().getMessenger().registerIncomingPluginChannel(this, "proxysuite:channel", new PMessageListener(this));
+        getServer().getMessenger().registerIncomingPluginChannel(this, "proxysuite:teleport", new TeleportHandler(this));
 
         if (getServer().getPluginManager().getPlugin("Vault") != null) {
             RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(Chat.class);
@@ -104,6 +127,10 @@ public class ProxySuiteBukkit extends JavaPlugin {
 
     public Chat getChat() {
         return chat;
+    }
+
+    public HashMap<OfflinePlayer, TeleportTarget> getPendingTeleportRequests() {
+        return pendingTeleportRequests;
     }
 
     public HashMap<String, BukkitTask> getPendingWarmupTeleports() {
