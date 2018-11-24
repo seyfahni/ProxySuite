@@ -1,7 +1,7 @@
 package de.sabbertran.proxysuite.utils;
 
-import de.sabbertran.proxysuite.utils.Regestry;
 import com.google.gson.Gson;
+import java.util.Objects;
 
 public final class Location {
 
@@ -104,6 +104,55 @@ public final class Location {
             bukkitLocation.setPitch(getPitch());
         }
         return bukkitLocation;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 41 * hash + Objects.hashCode(this.server);
+        hash = 41 * hash + Objects.hashCode(this.world);
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.x) ^ (Double.doubleToLongBits(this.x) >>> 32));
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.y) ^ (Double.doubleToLongBits(this.y) >>> 32));
+        hash = 41 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
+        hash = 41 * hash + Float.floatToIntBits(this.pitch);
+        hash = 41 * hash + Float.floatToIntBits(this.yaw);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Location other = (Location) obj;
+        if (Double.doubleToLongBits(this.x) != Double.doubleToLongBits(other.x)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.y) != Double.doubleToLongBits(other.y)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.z) != Double.doubleToLongBits(other.z)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.pitch) != Float.floatToIntBits(other.pitch)) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.yaw) != Float.floatToIntBits(other.yaw)) {
+            return false;
+        }
+        if (!Objects.equals(this.server, other.server)) {
+            return false;
+        }
+        if (!Objects.equals(this.world, other.world)) {
+            return false;
+        }
+        return true;
     }
     
 }
