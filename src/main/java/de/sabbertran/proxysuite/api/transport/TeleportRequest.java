@@ -1,5 +1,7 @@
 package de.sabbertran.proxysuite.api.transport;
 
+import com.google.gson.Gson;
+import de.sabbertran.proxysuite.utils.Regestry;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
@@ -68,5 +70,10 @@ public class TeleportRequest {
         }
         return true;
     }
-    
+
+    @Override
+    public String toString() {
+        return Regestry.optionalGson().orElseGet(Gson::new).toJson(this);
+    }
+
 }

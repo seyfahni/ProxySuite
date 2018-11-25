@@ -1,6 +1,7 @@
 package de.sabbertran.proxysuite.bungee.handlers;
 
 import de.sabbertran.proxysuite.api.transport.*;
+import de.sabbertran.proxysuite.api.transport.bungee.BungeeTeleportTarget;
 import de.sabbertran.proxysuite.bungee.ProxySuite;
 import de.sabbertran.proxysuite.bungee.utils.PendingTeleport;
 import de.sabbertran.proxysuite.utils.Location;
@@ -69,7 +70,7 @@ public class TeleportHandler {
         } catch (IOException e) {
             main.getLogger().log(Level.SEVERE, null, e);
         }
-        TeleportTarget target = teleportRequest.getTarget();
+        BungeeTeleportTarget target = teleportRequest.getTarget().getBungeeTeleportTarget();
         ServerInfo targetServer = target.getTargetServer(main.getProxy());
         if (targetServer != null) {
             targetServer.sendData("proxysuite:teleport", baos.toByteArray());

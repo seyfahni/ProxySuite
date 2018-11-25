@@ -31,13 +31,13 @@ public class TeleportHandler implements PluginMessageListener {
         final OfflinePlayer player = main.getServer().getOfflinePlayer(uuid);
         final long delay = calculateWarmupTicks(teleportRequest);
         if (delay > 0) {
-            Runnable warmupTask = new TeleportWarmupTask(main, player, teleportRequest.getTarget());
+            Runnable warmupTask = new TeleportWarmupTask(main, player, teleportRequest.getTarget().getBukkitTeleportTarget());
             main.getServer().getScheduler().scheduleSyncDelayedTask(main, warmupTask, delay);
         } else {
             if (!player.isOnline()) {
-                main.getPendingTeleportRequests().put(player, teleportRequest.getTarget());
+                main.getPendingTeleportRequests().put(player, teleportRequest.getTarget().getBukkitTeleportTarget());
             } else {
-                teleportRequest.getTarget().teleportToTarget(main.getServer(), player.getPlayer());
+                teleportRequest.getTarget().getBukkitTeleportTarget().teleportToTarget(main.getServer(), player.getPlayer());
             }
         }
     }

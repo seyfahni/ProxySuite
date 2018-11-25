@@ -1,33 +1,29 @@
-package de.sabbertran.proxysuite.api.transport;
+package de.sabbertran.proxysuite.api.transport.bungee;
 
 import com.google.gson.Gson;
-import de.sabbertran.proxysuite.api.transport.bukkit.BukkitPlayerTarget;
-import de.sabbertran.proxysuite.api.transport.bukkit.BukkitTeleportTarget;
-import de.sabbertran.proxysuite.api.transport.bungee.BungeePlayerTarget;
-import de.sabbertran.proxysuite.api.transport.bungee.BungeeTeleportTarget;
 import de.sabbertran.proxysuite.utils.Regestry;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Teleport to a target player.
+ * Teleport to a target player on a bungee proxy.
  */
-public class PlayerTarget implements TeleportTarget {
+public class BungeePlayerTarget implements BungeeTeleportTarget {
     
     private final UUID targetPlayer;
 
-    public PlayerTarget(UUID targetPlayer) {
+    public BungeePlayerTarget(UUID targetPlayer) {
         this.targetPlayer = Objects.requireNonNull(targetPlayer);
     }
 
     @Override
-    public BukkitTeleportTarget getBukkitTeleportTarget() {
-        return new BukkitPlayerTarget(targetPlayer);
-    }
-
-    @Override
-    public BungeeTeleportTarget getBungeeTeleportTarget() {
-        return new BungeePlayerTarget(targetPlayer);
+    public net.md_5.bungee.api.config.ServerInfo getTargetServer(net.md_5.bungee.api.ProxyServer proxy) {
+        net.md_5.bungee.api.connection.ProxiedPlayer player = proxy.getPlayer(targetPlayer);
+        if (player != null) {
+            return player.getServer().getInfo();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -48,7 +44,7 @@ public class PlayerTarget implements TeleportTarget {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final PlayerTarget other = (PlayerTarget) obj;
+        final BungeePlayerTarget other = (BungeePlayerTarget) obj;
         if (!Objects.equals(this.targetPlayer, other.targetPlayer)) {
             return false;
         }

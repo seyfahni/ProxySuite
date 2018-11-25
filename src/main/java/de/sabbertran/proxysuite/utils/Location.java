@@ -10,11 +10,11 @@ public final class Location {
     private final float pitch, yaw;
 
     public Location(String server, String world) {
-        this(server, world, Double.NaN, Double.NaN, Double.NaN);
+        this(server, world, 0d, 0d, 0d);
     }
 
     public Location(String server, String world, double x, double y, double z) {
-        this(server, world, x, y, z, Float.NaN, Float.NaN);
+        this(server, world, x, y, z, 0f, 0f);
     }
 
     public Location(String server, String world, double x, double y, double z, float pitch, float yaw) {
@@ -76,14 +76,6 @@ public final class Location {
         return Regestry.optionalGson().orElseGet(Gson::new).toJson(this);
     }
 
-    public boolean hasPosition() {
-        return x != Double.NaN && y != Double.NaN && z != Double.NaN;
-    }
-
-    public boolean hasDirection() {
-        return yaw != Float.NaN && pitch != Float.NaN;
-    }
-
     /**
      * Convert this location into a (Bukkit-){@link org.bukkit.Location}. Beware: The world may be set to null, if no
      * valid world could be found.
@@ -93,17 +85,7 @@ public final class Location {
      */
     public org.bukkit.Location toBukkitLocation(org.bukkit.Server server) {
         org.bukkit.World bukkitWorld = server.getWorld(getWorld());
-        org.bukkit.Location bukkitLocation;
-        if (hasPosition()) {
-            bukkitLocation = new org.bukkit.Location(bukkitWorld, getX(), getY(), getZ());
-        } else {
-            bukkitLocation = bukkitWorld.getSpawnLocation();
-        }
-        if (hasDirection()) {
-            bukkitLocation.setYaw(getYaw());
-            bukkitLocation.setPitch(getPitch());
-        }
-        return bukkitLocation;
+        return new org.bukkit.Location(bukkitWorld, getX(), getY(), getZ(), getYaw(), getPitch());
     }
 
     @Override

@@ -1,9 +1,8 @@
 package de.sabbertran.proxysuite.bukkit.teleport;
 
-import de.sabbertran.proxysuite.api.transport.TeleportTarget;
+import de.sabbertran.proxysuite.api.transport.bukkit.BukkitTeleportTarget;
 import de.sabbertran.proxysuite.bukkit.ProxySuiteBukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -12,9 +11,9 @@ public class TeleportWarmupTask implements Runnable {
 
     private final ProxySuiteBukkit main;
     private final OfflinePlayer player;
-    private final TeleportTarget target;
+    private final BukkitTeleportTarget target;
 
-    public TeleportWarmupTask(ProxySuiteBukkit main, OfflinePlayer player, TeleportTarget target) {
+    public TeleportWarmupTask(ProxySuiteBukkit main, OfflinePlayer player, BukkitTeleportTarget target) {
         this.main = main;
         this.player = player;
         this.target = target;

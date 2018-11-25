@@ -7,6 +7,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import de.sabbertran.proxysuite.api.transport.LocationTarget;
 import de.sabbertran.proxysuite.api.transport.PlayerTarget;
 import de.sabbertran.proxysuite.api.transport.TeleportTarget;
+import de.sabbertran.proxysuite.api.transport.bukkit.BukkitTeleportTarget;
 import de.sabbertran.proxysuite.bukkit.commands.BunCommand;
 import de.sabbertran.proxysuite.bukkit.portals.PortalHandler;
 import de.sabbertran.proxysuite.bukkit.teleport.TeleportHandler;
@@ -33,7 +34,7 @@ import org.bukkit.OfflinePlayer;
 
 public class ProxySuiteBukkit extends JavaPlugin {
 
-    private HashMap<OfflinePlayer, TeleportTarget> pendingTeleportRequests;
+    private HashMap<OfflinePlayer, BukkitTeleportTarget> pendingTeleportRequests;
     private HashMap<String, BukkitTask> pendingWarmupTeleports;
     private HashMap<String, Location> pendingLocationTeleports;
     private HashMap<String, String> pendingPlayerTeleports;
@@ -58,6 +59,7 @@ public class ProxySuiteBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        pendingTeleportRequests = new HashMap<>();
         pendingWarmupTeleports = new HashMap<>();
         pendingLocationTeleports = new HashMap<>();
         pendingPlayerTeleports = new HashMap<>();
@@ -129,7 +131,7 @@ public class ProxySuiteBukkit extends JavaPlugin {
         return chat;
     }
 
-    public HashMap<OfflinePlayer, TeleportTarget> getPendingTeleportRequests() {
+    public HashMap<OfflinePlayer, BukkitTeleportTarget> getPendingTeleportRequests() {
         return pendingTeleportRequests;
     }
 

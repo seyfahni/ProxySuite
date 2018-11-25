@@ -1,8 +1,16 @@
 package de.sabbertran.proxysuite.bungee;
 
 import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapterFactory;
+import de.sabbertran.proxysuite.api.transport.LocationTarget;
+import de.sabbertran.proxysuite.api.transport.PlayerTarget;
+import de.sabbertran.proxysuite.api.transport.TeleportTarget;
 
 import de.sabbertran.proxysuite.bungee.handlers.*;
+import de.sabbertran.proxysuite.libraries.com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
+import de.sabbertran.proxysuite.utils.Regestry;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -46,6 +54,17 @@ public class ProxySuite extends Plugin {
 
     public ProxySuite() {
         instance = this;
+    }
+
+    @Override
+    public void onLoad() {
+        TypeAdapterFactory teleportTargetTypeAdapterFactory = RuntimeTypeAdapterFactory.of(TeleportTarget.class)
+                .registerSubtype(PlayerTarget.class)
+                .registerSubtype(LocationTarget.class);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(teleportTargetTypeAdapterFactory)
+                .create();
+        Regestry.getInstance().registerGson(gson);
     }
 
     @Override

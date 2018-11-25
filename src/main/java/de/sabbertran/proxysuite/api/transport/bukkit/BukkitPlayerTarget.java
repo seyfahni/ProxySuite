@@ -1,33 +1,27 @@
-package de.sabbertran.proxysuite.api.transport;
+package de.sabbertran.proxysuite.api.transport.bukkit;
 
 import com.google.gson.Gson;
-import de.sabbertran.proxysuite.api.transport.bukkit.BukkitPlayerTarget;
-import de.sabbertran.proxysuite.api.transport.bukkit.BukkitTeleportTarget;
-import de.sabbertran.proxysuite.api.transport.bungee.BungeePlayerTarget;
-import de.sabbertran.proxysuite.api.transport.bungee.BungeeTeleportTarget;
 import de.sabbertran.proxysuite.utils.Regestry;
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Teleport to a target player.
+ * Teleport to a target player on a bukkit server.
  */
-public class PlayerTarget implements TeleportTarget {
+public class BukkitPlayerTarget implements BukkitTeleportTarget {
     
     private final UUID targetPlayer;
 
-    public PlayerTarget(UUID targetPlayer) {
+    public BukkitPlayerTarget(UUID targetPlayer) {
         this.targetPlayer = Objects.requireNonNull(targetPlayer);
     }
 
     @Override
-    public BukkitTeleportTarget getBukkitTeleportTarget() {
-        return new BukkitPlayerTarget(targetPlayer);
-    }
-
-    @Override
-    public BungeeTeleportTarget getBungeeTeleportTarget() {
-        return new BungeePlayerTarget(targetPlayer);
+    public void teleportToTarget(org.bukkit.Server server, org.bukkit.entity.Player toTeleport) {
+        org.bukkit.OfflinePlayer player = server.getOfflinePlayer(targetPlayer);
+        if (player.isOnline()) {
+            toTeleport.teleport(player.getPlayer(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND);
+        }
     }
 
     @Override
@@ -48,7 +42,7 @@ public class PlayerTarget implements TeleportTarget {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final PlayerTarget other = (PlayerTarget) obj;
+        final BukkitPlayerTarget other = (BukkitPlayerTarget) obj;
         if (!Objects.equals(this.targetPlayer, other.targetPlayer)) {
             return false;
         }

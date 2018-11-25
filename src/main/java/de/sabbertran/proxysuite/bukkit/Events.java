@@ -1,6 +1,6 @@
 package de.sabbertran.proxysuite.bukkit;
 
-import de.sabbertran.proxysuite.api.transport.TeleportTarget;
+import de.sabbertran.proxysuite.api.transport.bukkit.BukkitTeleportTarget;
 import de.sabbertran.proxysuite.bukkit.portals.Portal;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -60,7 +60,7 @@ public class Events implements Listener {
             }
         }
 
-        TeleportTarget target = main.getPendingTeleportRequests().remove(p);
+        BukkitTeleportTarget target = main.getPendingTeleportRequests().remove(p);
         if (target != null) {
             main.getServer().getScheduler().scheduleSyncDelayedTask(main, () -> target.teleportToTarget(main.getServer(), p), 1);
         }
